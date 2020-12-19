@@ -1,5 +1,6 @@
-const express = require('express');
-const app = express();
+import Express from "express";
+// const express = require('express');
+const app = Express();
 
 app.use((req, res, next) => {
     res.status(200).send({
