@@ -1,35 +1,85 @@
-const investments = require('../models/investments')
+const investments = require('../models/investments');
+const { check, param, validationResult } = require('express-validator');
 
 module.exports = app => {
-    app.get('/investments', function (req, res) {
+    app.get('/investments', (req, res) => {
+        investments.listInvestment(res);
+    })
 
-        fs.readFile('data/investment.json', 'utf8', function (err, data) {
-            if (err) {
-                return console.log("Error reading file.");
-            } else {                       
-                res.send(data)
+    app.get('/investments/:id',
+        param('id')
+            .isInt()
+            .withMessage('Invalid ID type (integer).'),
+        (req, res) => {
+            const errors = validationResult(req);
+            if (!errors.isEmpty()) {
+                return res.status(400).json({ errors: errors.array() });
             }
+            const id = parseInt(req.params.id);
+            investments.searchForId(id, res);
         })
-    })
 
-    app.post('/investments', function (req, res) {
-        const investment = req.body;
-        investments.createInvestment(investment);
-        res.send('Post Investment.');        
-    })
+    app.put('/investments/:id', [
+        param('id')
+            .isInt()
+            .withMessage('Invalid ID type (integer).'),            
+        check('period')
+            .isISO8601()
+            .withMessage('Invalid Period format (yyyy-mm-dd).')
+            .isDate({ format: 'yyyy-mm-dd', strictMode: true })
+            .withMessage('Invalid date (yyyy-mm-dd).')
+            .toDate()
+            .custom((period) => {
+                const today = new Date();
+                if (period > today) {
+                    throw new Error('Period must be iqual or less today.');
+                }
 
-    app.delete('/investment', function (req, res) {
-        rewrite(req); 
-        res.send(true);  
-    })
-    
-    function rewrite(data) {
-        //JsonData = JSON.stringify(data);
-        JsonData = 'DELETED'
-        fs.writeFile('data/investment.json', JsonData, function (err) {
-            if (err) {
-                return console.log("Error writing file.");
+                return true;
+            }),
+        (req, res) => {
+            const errors = validationResult(req);
+            if (!errors.isEmpty()) {
+                return res.status(400).json({ errors: errors.array() });
             }
+            const id = parseInt(req.params.id);
+            const investment = req.body;
+            investments.updateInvestment(id, investment, res);
+        }])
+
+    app.post('/investments',
+        check('period')
+            .isISO8601()
+            .withMessage('Invalid Period format (yyyy-mm-dd).')
+            .isDate({ format: 'yyyy-mm-dd', strictMode: true })
+            .withMessage('Invalid date (yyyy-mm-dd).')
+            .toDate()
+            .custom((period) => {
+                const today = new Date();
+                if (period > today) {
+                    throw new Error('Period must be iqual or less today.');
+                }
+                return true;
+            }),
+        (req, res) => {
+            const errors = validationResult(req);
+            if (!errors.isEmpty()) {
+                return res.status(400).json({ errors: errors.array() });
+            }
+            const investment = req.body;
+            investments.createInvestment(investment, res);
         })
-    }
+
+    app.delete('/investments/:id',
+        param('id')
+            .isInt()
+            .withMessage('Invalid ID type (integer).'),
+        (req, res) => {
+            const errors = validationResult(req);
+            if (!errors.isEmpty()) {
+                return res.status(400).json({ errors: errors.array() });
+            }
+            const id = parseInt(req.params.id);
+            investments.deleteInvestment(id, res);
+        })
 }
