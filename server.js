@@ -1,16 +1,16 @@
-const port = process.env.PORT || 3000;
+const port = process.env.API_PORT || 3000;
 const customExpress = require('./config/customExpress');
 const conection = require('./infrastructure/conection');
 const tables = require('./infrastructure/tables');
 
-conection.connect((error) => {
+conection.getConnection((error, conn) => {
     if (error) {
-        console.log('Error connecting DB my-invest on port 3306.')
+        console.log(`Error connecting DB my-invest on port ${process.env.MYSQL_PORT}.`) 
     } else {
-        const app = customExpress();
-        tables.init(conection);
-
-        app.get('/test', (req, res) => res.send(`WebServer running on port ${port} - ${new Date}`));
+        const app = customExpress();  
+        
+        tables.init(conn);
+        conn.release;      
 
         app.listen(port, (error) => {
             if (error) {
@@ -21,6 +21,6 @@ conection.connect((error) => {
             }
         });
     }
-})
+}) 
 
 

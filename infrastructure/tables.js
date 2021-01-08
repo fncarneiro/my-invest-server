@@ -5,6 +5,14 @@ class Tables {
     }
 
     createTables() {
+        const sqlUser = `CREATE TABLE IF NOT EXISTS users (
+            id_users int NOT NULL AUTO_INCREMENT,
+            email varchar(100) NOT NULL,
+            password varchar(100) NOT NULL,
+            PRIMARY KEY (id_users),
+            UNIQUE KEY email_UNIQUE (email)
+          ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci`;    
+        
         const sqlInvestment = `CREATE TABLE IF NOT EXISTS investments (
             id_investmen int NOT NULL AUTO_INCREMENT,
             period date NOT NULL,
@@ -30,7 +38,7 @@ class Tables {
             ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci`;          
               
 
-        const sql = [sqlInvestment, sqlStock];
+        const sql = [sqlUser, sqlInvestment, sqlStock];
 
         sql.forEach((sql) => {
             this.conection.query(sql, (erro) => {

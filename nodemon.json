@@ -1,0 +1,15 @@
+{
+    "env": {
+        "MYSQL_LIMIT"    : 10,
+        "MYSQL_HOST"     : "localhost", 
+        "MYSQL_PORT"     : 3306,   
+        "MYSQL_USER"     : "root",
+        "MYSQL_PASSWORD" : "admin",
+        "MYSQL_DATABASE" : "investments",
+
+        "API_PORT"       : 3000,
+        "API_HOST"       : "http://localhost",
+
+        "JWT_KEY"        : "calangoseco"
+    }
+}
