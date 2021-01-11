@@ -10,6 +10,7 @@
         "API_PORT"       : 3000,
         "API_HOST"       : "http://localhost",
 
-        "JWT_KEY"        : "calangoseco"
+        "JWT_KEY"        : "calangoseco",
+        "JWT_EXPIRES"    : "1H"
     }
 }

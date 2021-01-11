@@ -1,28 +1,29 @@
 const investments = require('../models/investments');
 const { check, param, validationResult } = require('express-validator');
 
-module.exports = app => {
-    app.get('/investments', (req, res) => {
-        investments.listInvestment(res);
-    })
+module.exports = {
+    listInvestments: [
+        (req, res, next) => {
+            investments.listInvestment(res);
+        }],
 
-    app.get('/investments/:id',
+    getInvestment: [
         param('id')
             .isInt()
             .withMessage('Invalid ID type (integer).'),
-        (req, res) => {
+        (req, res, next) => {
             const errors = validationResult(req);
             if (!errors.isEmpty()) {
                 return res.status(400).json({ errors: errors.array() });
             }
             const id = parseInt(req.params.id);
             investments.searchForId(id, res);
-        })
+        }],
 
-    app.put('/investments/:id', [
+    putInvestment: [
         param('id')
             .isInt()
-            .withMessage('Invalid ID type (integer).'),            
+            .withMessage('Invalid ID type (integer).'),
         check('period')
             .isISO8601()
             .withMessage('Invalid Period format (yyyy-mm-dd).')
@@ -37,7 +38,7 @@ module.exports = app => {
 
                 return true;
             }),
-        (req, res) => {
+        (req, res, next) => {
             const errors = validationResult(req);
             if (!errors.isEmpty()) {
                 return res.status(400).json({ errors: errors.array() });
@@ -45,9 +46,9 @@ module.exports = app => {
             const id = parseInt(req.params.id);
             const investment = req.body;
             investments.updateInvestment(id, investment, res);
-        }])
+        }],
 
-    app.post('/investments',
+    postInvestment: [
         check('period')
             .isISO8601()
             .withMessage('Invalid Period format (yyyy-mm-dd).')
@@ -61,25 +62,25 @@ module.exports = app => {
                 }
                 return true;
             }),
-        (req, res) => {
+        (req, res, next) => {
             const errors = validationResult(req);
             if (!errors.isEmpty()) {
                 return res.status(400).json({ errors: errors.array() });
             }
             const investment = req.body;
             investments.createInvestment(investment, res);
-        })
+        }],
 
-    app.delete('/investments/:id',
+    deleteInvestment: [
         param('id')
             .isInt()
             .withMessage('Invalid ID type (integer).'),
-        (req, res) => {
+        (req, res, next) => {
             const errors = validationResult(req);
             if (!errors.isEmpty()) {
                 return res.status(400).json({ errors: errors.array() });
             }
             const id = parseInt(req.params.id);
             investments.deleteInvestment(id, res);
-        })
+        }]
 }

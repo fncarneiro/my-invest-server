@@ -1,12 +1,14 @@
 const users = require('../models/users');
 const { check, param, validationResult } = require('express-validator');
 
-module.exports = app => {
-    app.get('/users', (req, res) => {
-        users.listUsers(res);
-    })
+module.exports = {
 
-    app.get('/users/:id',
+    listUsers: [
+        (req, res, next) => {
+            users.listUsers(res);
+        }],
+
+    getUser: [
         param('id')
             .isInt()
             .withMessage('Invalid ID format (integer).'),
@@ -17,9 +19,9 @@ module.exports = app => {
             }
             const id = parseInt(req.params.id);
             users.searchForId(id, res);
-        })
+        }],
 
-    app.put('/users/:id', [
+    putUser: [
         param('id')
             .isInt()
             .withMessage('Invalid ID type (integer).'),
@@ -42,9 +44,9 @@ module.exports = app => {
             const id = parseInt(req.params.id);
             const user = req.body;
             users.updateUser(id, user, res);
-        }])
+        }],
 
-    app.post('/users', [
+    postUser: [
         check('email')
             .exists()
             .withMessage('Email is required.')
@@ -63,10 +65,9 @@ module.exports = app => {
             }
             const user = req.body;
             users.createUser(user, res);
-        }
-    ])
+        }],
 
-    app.delete('/users/:id',
+    deleteUser: [
         param('id')
             .isInt()
             .withMessage('Invalid ID format (integer).'),
@@ -77,27 +78,5 @@ module.exports = app => {
             }
             const id = parseInt(req.params.id);
             users.deleteUser(id, res);
-        })
-
-    app.post('/login', [
-        check('email')
-            .exists()
-            .withMessage('Email is required.')
-            .isEmail()
-            .withMessage('Invalid Email format (email@domain.com).')
-            .toLowerCase(),
-        check('password')
-            .exists()
-            .withMessage('Password is required.')
-            .isLength({ min: 8 })
-            .withMessage('Password must have min 8 characters.'),
-        (req, res) => {
-            const errors = validationResult(req);
-            if (!errors.isEmpty()) {
-                return res.status(400).json({ errors: errors.array() });
-            }
-            const user = req.body;
-            users.loginUser(user, res);
-        }
-    ])
+        }]
 }

@@ -1,11 +1,19 @@
-const port = process.env.API_PORT || 3000;
 const express = require('express');
-const consign = require('consign');
+const port = process.env.API_PORT || 3000;
 const bodyParser = require('body-parser');
+const consign = require('consign');
+const cors = require('cors');
+const helmet = require('helmet');
+const compression = require('compression');
 const morgan = require('morgan');
 
 module.exports = () => {
     const app = express();
+
+    app.use(cors());
+    app.use(helmet());
+    app.use(compression());
+
     app.use(bodyParser.urlencoded({ extended: false }));
     app.use(bodyParser.json());
     app.use(morgan('dev'));
@@ -23,8 +31,14 @@ module.exports = () => {
         next();
     });
 
+    // consign({
+    //     cwd: 'app',
+    //     verbose: process.env.APP_DEBUG === 'true' || false,
+    //     locale: 'pt-br'
+    // }).include('./middlewares/globals').then('../routes').into(app)
+
     consign()
-        .include('controllers')
+        .include('routes')
         .into(app);
 
     app.get('/test', (req, res) => res.send(`WebServer running on port ${port} - ${new Date}`));
