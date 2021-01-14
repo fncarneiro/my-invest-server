@@ -1,14 +1,14 @@
 {
     "env": {
         "MYSQL_LIMIT"    : 10,
-        "MYSQL_HOST"     : "localhost", 
+        "MYSQL_HOST"     : "heroku_19b498eb70ab7b4", 
         "MYSQL_PORT"     : 3306,   
-        "MYSQL_USER"     : "root",
-        "MYSQL_PASSWORD" : "admin",
+        "MYSQL_USER"     : "beccedf67c4658",
+        "MYSQL_PASSWORD" : "03729b38",
         "MYSQL_DATABASE" : "investments",
 
         "API_PORT"       : 3000,
-        "API_HOST"       : "http://localhost",
+        "API_HOST"       : "https://myinvest-api.herokuapp.com",
 
         "JWT_KEY"        : "calangoseco",
         "JWT_EXPIRES"    : "1H"
