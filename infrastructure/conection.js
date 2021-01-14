@@ -8,8 +8,6 @@ const pool = mysql.createPool({
     database: process.env.MYSQL_DATABASE
 });
 
-//console.log('MySql pool => created');
-
 pool.on('release', () => console.log('MySql pool => connection returned')); 
 
 process.on('SIGINT', () => 

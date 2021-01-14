@@ -11,14 +11,14 @@ class Tables {
             password varchar(100) NOT NULL,
             PRIMARY KEY (id_users),
             UNIQUE KEY email_UNIQUE (email)
-          ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci`;    
+          ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4`;    
         
         const sqlInvestment = `CREATE TABLE IF NOT EXISTS investments (
-            id_investmen int NOT NULL AUTO_INCREMENT,
+            id_investment int NOT NULL AUTO_INCREMENT,
             period date NOT NULL,
             PRIMARY KEY (id_investment),
             UNIQUE KEY period_UNIQUE (period)) 
-            ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci`;  
+            ENGINE=InnoDB DEFAULT CHARSET=utf8mb4`;  
 
         const sqlStock = `CREATE TABLE IF NOT EXISTS stocks (
             id_stocks int NOT NULL AUTO_INCREMENT,
@@ -35,7 +35,7 @@ class Tables {
             PRIMARY KEY (id_stocks),
             KEY id_investment_idx (id_investment),
             CONSTRAINT id_investment FOREIGN KEY (id_investment) REFERENCES investments (id_investment) ON DELETE CASCADE) 
-            ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci`;          
+            ENGINE=InnoDB DEFAULT CHARSET=utf8mb4`;          
               
 
         const sql = [sqlUser, sqlInvestment, sqlStock];

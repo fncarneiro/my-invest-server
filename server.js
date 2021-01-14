@@ -1,7 +1,9 @@
-const port = process.env.API_PORT || 3000;
+const dotenv = require('dotenv').config();
 const customExpress = require('./config/customExpress');
 const conection = require('./infrastructure/conection');
 const tables = require('./infrastructure/tables');
+
+const port = process.env.PORT || 3000;
 
 conection.getConnection((error, conn) => {
     if (error) {
@@ -16,8 +18,8 @@ conection.getConnection((error, conn) => {
             if (error) {
                 return console.log(`Anything goes wrong on starting server - ${error}`)
             }
-            else {
-                console.log(`Server running on port ${port} ...`)
+            else {                
+                console.log(`Server running on port ${port}, Host ${process.env.HOST} ...`)
             }
         });
     }

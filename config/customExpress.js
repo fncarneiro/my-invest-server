@@ -1,5 +1,4 @@
 const express = require('express');
-const port = process.env.API_PORT || 3000;
 const bodyParser = require('body-parser');
 const consign = require('consign');
 const cors = require('cors');
@@ -40,6 +39,8 @@ module.exports = () => {
     consign()
         .include('routes')
         .into(app);
+
+    const port = process.env.PORT || 3000;
 
     app.get('/test', (req, res) => res.send(`WebServer running on port ${port} - ${new Date}`));
 
