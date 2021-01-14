@@ -6,10 +6,10 @@ class Tables {
 
     createTables() {
         const sqlUser = `CREATE TABLE IF NOT EXISTS users (
-            id_users int NOT NULL AUTO_INCREMENT,
+            id_user int NOT NULL AUTO_INCREMENT,
             email varchar(100) NOT NULL,
             password varchar(100) NOT NULL,
-            PRIMARY KEY (id_users),
+            PRIMARY KEY (id_user),
             UNIQUE KEY email_UNIQUE (email)
           ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4`;    
         
@@ -21,7 +21,7 @@ class Tables {
             ENGINE=InnoDB DEFAULT CHARSET=utf8mb4`;  
 
         const sqlStock = `CREATE TABLE IF NOT EXISTS stocks (
-            id_stocks int NOT NULL AUTO_INCREMENT,
+            id_stock int NOT NULL AUTO_INCREMENT,
             stock_name varchar(6) NOT NULL,
             by_amount int NOT NULL,
             by_price decimal(12,0) NOT NULL,
@@ -32,7 +32,7 @@ class Tables {
             sell_tax decimal(12,2) DEFAULT NULL,
             note varchar(200) DEFAULT NULL,
             id_investment int NOT NULL,
-            PRIMARY KEY (id_stocks),
+            PRIMARY KEY (id_stock),
             KEY id_investment_idx (id_investment),
             CONSTRAINT id_investment FOREIGN KEY (id_investment) REFERENCES investments (id_investment) ON DELETE CASCADE) 
             ENGINE=InnoDB DEFAULT CHARSET=utf8mb4`;          

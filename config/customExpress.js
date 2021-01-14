@@ -23,6 +23,7 @@ module.exports = () => {
 
         if (req.method === 'OPTIONS') {
             res.header('Access-Control-Allow-Methods', 'GET, PUT, POST, DELETE');
+            console.log('jhghgh')
             return res.status(200).send({
                 Options: 'GET, PUT, POST, DELETE'
             });

@@ -5,12 +5,13 @@ const jwt = require('jsonwebtoken');
 class login {
 
     loginUser(user, res) {
-        const sqlSearch = 'SELECT * FROM users WHERE email = ?';
+        const sqlSearch = 'SELECT email, password FROM users WHERE email = ?';
 
         conection.getConnection((error, conn) => {
             if (error) { return res.status(500).json(error) }
 
             conn.query(sqlSearch, user.email, (error, result) => {
+                
                 if (error) {
                     res.status(400).json(error)
                 } else {

@@ -51,7 +51,7 @@ class stock {
     }
 
     updateStock(id, stock, res) {
-        const sqlUpdate = 'UPDATE stocks SET ? where id_stocks = ?';
+        const sqlUpdate = 'UPDATE stocks SET ? where id_stock = ?';
 
         conection.getConnection((error, conn) => {
             if (error) { return res.status(500).json(error) }
@@ -93,7 +93,7 @@ class stock {
     }
 
     listStocks(res) {
-        const sqlList = 'SELECT * FROM stocks order by id_stocks';
+        const sqlList = 'SELECT * FROM stocks order by id_stock';
         conection.getConnection((error, conn) => {
             if (error) { return res.status(500).json(error) }
 
@@ -132,7 +132,7 @@ class stock {
     }
 
     searchForId(id, res) {
-        const sqlSearch = 'SELECT * FROM stocks WHERE id_stocks= ?';
+        const sqlSearch = 'SELECT * FROM stocks WHERE id_stock= ?';
         conection.getConnection((error, conn) => {
             if (error) { return res.status(500).json(error) }
 
@@ -173,7 +173,7 @@ class stock {
     }
 
     deleteStock(id, res) {
-        const sqlDelete = 'DELETE FROM stocks where id_stocks = ?';
+        const sqlDelete = 'DELETE FROM stocks where id_stock = ?';
         conection.getConnection((error, conn) => {
             if (error) { return res.status(500).json(error) }
 
