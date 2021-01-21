@@ -12,13 +12,13 @@ module.exports = {
         param('id')
             .isInt()
             .withMessage('Invalid ID format (integer).'),
-        (req, res) => {
+        (req, res, next) => {
             const errors = validationResult(req);
             if (!errors.isEmpty()) {
                 return res.status(400).json({ errors: errors.array() });
             }
             const id = parseInt(req.params.id);
-            stocks.searchForId(id, res);
+            stocks.getStock(id, res);
         }],
 
     putStock: [
@@ -59,7 +59,7 @@ module.exports = {
         check(['by_price', 'by_tax', 'target_profit', 'sell_profit', 'sell_tax'])
             .isFloat({ min: 0.0, max: 9999999999.99 })
             .withMessage('Invalid value type (decimal(10,2).'),
-        (req, res) => {
+        (req, res, next) => {
             const errors = validationResult(req);
             if (!errors.isEmpty()) {
                 return res.status(400).json({ errors: errors.array() });
@@ -72,7 +72,7 @@ module.exports = {
         param('id')
             .isInt()
             .withMessage('Invalid ID format (integer).'),
-        (req, res) => {
+        (req, res, next) => {
             const errors = validationResult(req);
             if (!errors.isEmpty()) {
                 return res.status(400).json({ errors: errors.array() });

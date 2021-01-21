@@ -2,9 +2,9 @@ const auth = require('../middlewares/auth');
 const stocks = require('../controllers/stocks');
 
 module.exports = app => {
-    app.get('/stocks', auth.mandatory, stocks.listStocks);
+    app.get('/stocks', auth.optional, stocks.listStocks);
 
-    app.get('/stocks/:id', auth.mandatory, stocks.getStock);
+    app.get('/stocks/:id', auth.optional, stocks.getStock);
 
     app.put('/stocks/:id', auth.mandatory, stocks.putStock);
 

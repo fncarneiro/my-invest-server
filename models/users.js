@@ -1,186 +1,160 @@
-const conection = require('../infrastructure/conection');
-const bcrypt = require('bcrypt');
+const pool = require('../infrastructure/conection');
+const crypt = require('../utils/crypt');
 
-class user {
-    createUser(user, res) {
+module.exports = {
+    async createUser(user, res) {
         const sqlInsert = 'INSERT INTO users (email, password) VALUES (?, ?)';
-        const sqlSearch = 'SELECT * FROM users WHERE email = ?';
+        const sqlSearch = 'SELECT id_user, email, password FROM users WHERE email = ?';
 
-        conection.getConnection((error, conn) => {
-            if (error) { return res.status(500).json(error) }
+        try {
+            const resultList = await pool.execQuery(sqlSearch, user.email);
 
-            conn.query(sqlSearch, user.email, (error, result) => {
-                if (error) {
-                    res.status(400).json(error)
+            if (resultList.length > 0) {
+                return res.status(409).json({ msg: 'Email already exists.', email: user.email })
+            } else {
+                const resultCrypt = await crypt.encrypt(user.password);
+
+                if (!resultCrypt) {
+                    return res.status(500).json(resultCrypt)
                 } else {
-                    if (result.length > 0) {
-                        res.status(409).json({ msg: 'Email already exists.', email: user.email })
-                    } else {
-                        bcrypt.hash(user.password, 10, (errBcrypt, hash) => {
-                            if (errBcrypt) { res.status(500).json({ error: errBcrypt }) }
+                    const resultInsert = await pool.execQuery(sqlInsert, [user.email, resultCrypt]);
 
-                            conection.query(sqlInsert, [user.email, hash], (error, result) => {
-                                if (error) {
-                                    res.status(400).json(error)
-                                } else {
-                                    const response = {
-                                        msg: 'User created.',
-                                        id_user: result.insertId,
-                                        email: user.email,
-                                        request: {
-                                            type: 'POST',
-                                            description: 'Insert a user.',
-                                            url: process.env.API_HOST + ':' + process.env.API_PORT + '/users/' + result.insertId
-                                        }
-                                    }
-                                    res.status(201).json(response);
-                                }
-
-                            });
-                        });
-                    }
-                }
-            });
-            conn.release();
-        });
-    }
-
-    updateUser(id, user, res) {
-        const sqlUpdate = 'UPDATE users SET password = ? WHERE id_user = ?';
-        const sqlSearch = 'SELECT * FROM users WHERE id_user = ?';
-
-        conection.getConnection((error, conn) => {
-            if (error) { return res.status(500).json(error) }
-
-            conn.query(sqlSearch, id, (error, result) => {
-                if (error) {
-                    res.status(400).json(error)
-                } else {
-                    if (result.length == 0) {
-                        res.status(409).json({ msg: 'Id not found.', id_user: id })
-                    } else {
-                        bcrypt.hash(user.password, 10, (errBcrypt, hash) => {
-                            if (errBcrypt) { res.status(500).json({ error: errBcrypt }) }
-
-                            conection.query(sqlUpdate, [hash, id], (error, result) => {
-                                if (error) {
-                                    res.status(400).json(error)
-                                } else {
-                                    const response = {
-                                        msg: 'User password updated.',
-                                        id_user: id,
-                                        email: user.email,
-                                        request: {
-                                            type: 'POST',
-                                            description: 'Update a specific user.',
-                                            url: process.env.API_HOST + ':' + process.env.API_PORT + '/users/' + id
-                                        }
-                                    }
-                                    res.status(201).json(response);
-                                }
-
-                            });
-                        });
-                    }
-                }
-            });
-            conn.release();
-        });
-    }
-
-    listUsers(res) {
-        const sqlList = 'SELECT * FROM users';
-        conection.getConnection((error, conn) => {
-            if (error) { return res.status(500).json(error) }
-
-            conn.query(sqlList, (error, result) => {
-                if (error) {
-                    res.status(400).json(error)
-                } else {
                     const response = {
-                        records: result.length,
-                        users: result.map(user => {
-                            return {
-                                id_user: user.id_user,
-                                email: user.email,                                
-                                request: {
-                                    type: 'GET',
-                                    description: 'List all users.',
-                                    url: process.env.API_HOST + ':' + process.env.API_PORT + '/users/' + user.id_user
-                                }
-                            }
-                        })
-                    }
-                    res.status(200).json(response);
-                }
-            });
-            conn.release();
-        });
-    }
-
-    searchForId(id, res) {
-        const sqlSearch = `SELECT * FROM users WHERE id_user = ?`;
-        conection.getConnection((error, conn) => {
-            if (error) { return res.status(500).json(error) }
-
-            conn.query(sqlSearch, id, (error, result) => {
-                if (error) {
-                    res.status(400).json(error)
-                } else {
-                    if (result.length == 0) {
-                        res.status(404).json({ msg: 'Id not found', id_stocks: id })
-                    } else {
-                        console.log(result)
-                        const response = {
-                            records: result.length,
-                            user: {
-                                id_user: result[0].id_user,
-                                email: result[0].email,                                
-                                request: {
-                                    type: 'GET',
-                                    description: 'List a specific user.',
-                                    url: process.env.API_HOST + ':' + process.env.API_PORT + '/users/' + id
-                                }
+                        msg: 'User created.',
+                        user: {
+                            id_user: resultInsert.insertId,
+                            email: user.email,
+                            request: {
+                                type: 'POST',
+                                description: 'Insert a user.',
+                                url: process.env.HOST + ':' + process.env.PORT + '/users/'
                             }
                         }
-                        res.status(200).json(response);
                     }
+                    return res.status(201).json(response);
                 }
-            });
-            conn.release();
-        });
-    }
+            }
+        } catch (error) {
+            return res.status(400).json(error);
+        }
+    },
 
-    deleteUser(id, res) {
-        const sqlDelete = 'DELETE FROM users where id_user = ?';
-        conection.getConnection((error, conn) => {
-            if (error) { return res.status(500).json(error) }
+    async updateUser(user, res) {
+        const sqlUpdate = 'UPDATE users SET password = ? WHERE email = ?';
+        const sqlSearch = 'SELECT id_user, email, password FROM users WHERE email = ?';
 
-            conn.query(sqlDelete, id, (error, result) => {
-                if (error) {
-                    res.status(400).json(error)
+        try {
+            const resultList = await pool.execQuery(sqlSearch, user.email);
+
+            if (resultList.length == 0) {
+                return res.status(409).json({ msg: 'Email not found.', email: user.email })
+            } else {
+                const resultCrypt = await crypt.encrypt(user.password);
+
+                if (!resultCrypt) {
+                    return res.status(500).json(resultCrypt)
                 } else {
-                    if (result.affectedRows == 0) {
-                        res.status(409).json({ msg: 'Id not found.', id_stocks: id })
-                    } else {
-                        const response = {
-                            msg: 'User deleted',
-                            stock: {
-                                id_user: id,
-                                request: {
-                                    type: 'DELETE',
-                                    description: 'Delete a specific user.',
-                                    url: process.env.API_HOST + ':' + process.env.API_PORT + '/users/'
-                                }
+                    const resultUpdate = await pool.execQuery(sqlUpdate, [resultCrypt, user.email]);
+
+                    const response = {
+                        msg: 'User password updated.',
+                        user: {
+                            id_user: resultList[0].id_user,
+                            email: resultList[0].email,
+                            request: {
+                                type: 'PUT',
+                                description: 'Update user password.',
+                                url: process.env.HOST + ':' + process.env.PORT + '/users/'
                             }
                         }
-                        res.status(202).json(response);
+                    }
+                    return res.status(201).json(response);
+                }
+            }
+        } catch (erro) {
+            return res.status(400).json(error);
+        }
+    },
+
+
+    async listUsers(res) {
+        const sqlList = 'SELECT id_user, email, password FROM users';
+        try {
+            const resultList = await pool.execQuery(sqlList);
+            const response = {
+                records: resultList.length,
+                users: resultList.map(user => {
+                    return {
+                        user: {
+                            id_user: user.id_user,
+                            email: user.email,
+                            request: {
+                                type: 'GET',
+                                description: 'List all users.',
+                                url: process.env.HOST + ':' + process.env.PORT + '/users/'
+                            }
+                        }
+                    }
+                })
+            }
+            return res.status(200).json(response);
+        } catch (error) {
+            return res.status(400).json(error);
+        }
+    },
+
+    async getUser(email, res) {
+        const sqlSearch = 'SELECT id_user, email, password FROM users WHERE email = ?';
+
+        try {
+            const resultList = await pool.execQuery(sqlSearch, email);
+
+            if (resultList.length == 0) {
+                res.status(404).json({ msg: 'Email not found', email: email })
+            } else {
+                const response = {
+                    records: resultList.length,
+                    user: {
+                        id_user: resultList[0].id_user,
+                        email: resultList[0].email,
+                        request: {
+                            type: 'GET',
+                            description: 'List a specific user.',
+                            url: process.env.HOST + ':' + process.env.PORT + '/users/' + email
+                        }
                     }
                 }
-            });
-            conn.release();
-        });
-    }    
+                res.status(200).json(response);
+            }
+        } catch (error) {
+            return res.status(400).json(error);
+        }
+    },
+
+    async deleteUser(email, res) {
+        const sqlDelete = 'DELETE FROM users where email = ?';
+
+        try {
+            const resultDelete = await pool.execQuery(sqlDelete, email);
+
+            if (resultDelete.affectedRows == 0) {
+                res.status(409).json({ msg: 'Email not found.', email: email })
+            } else {
+                const response = {
+                    msg: 'User deleted',
+                    user: {
+                        email: email,
+                        request: {
+                            type: 'DELETE',
+                            description: 'Delete a specific user.',
+                            url: process.env.HOST + ':' + process.env.PORT + '/users/'
+                        }
+                    }
+                }
+                res.status(202).json(response);
+            }
+        } catch (error) {
+            return res.status(400).json(error);
+        }
+    }
 }
-
-module.exports = new user;    

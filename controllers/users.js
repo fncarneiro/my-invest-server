@@ -1,5 +1,5 @@
 const users = require('../models/users');
-const { check, param, validationResult } = require('express-validator');
+const { check, validationResult } = require('express-validator');
 
 module.exports = {
 
@@ -8,23 +8,23 @@ module.exports = {
             users.listUsers(res);
         }],
 
-    getUser: [
-        param('id')
-            .isInt()
-            .withMessage('Invalid ID format (integer).'),
-        (req, res) => {
+    getUser: [  
+        check('email')
+            .exists()
+            .withMessage('Email is required.')
+            .isEmail()
+            .withMessage('Invalid Email format (email@domain.com).')
+            .toLowerCase(),      
+        (req, res, next) => {
             const errors = validationResult(req);
             if (!errors.isEmpty()) {
                 return res.status(400).json({ errors: errors.array() });
             }
-            const id = parseInt(req.params.id);
-            users.searchForId(id, res);
+            const email = req.params.email;
+            users.getUser(email, res);
         }],
 
-    putUser: [
-        param('id')
-            .isInt()
-            .withMessage('Invalid ID type (integer).'),
+    putUser: [        
         check('email')
             .exists()
             .withMessage('Email is required.')
@@ -36,14 +36,13 @@ module.exports = {
             .withMessage('Password is required.')
             .isLength({ min: 8 })
             .withMessage('Password must have min 8 characters.'),
-        (req, res) => {
+        (req, res, next) => {
             const errors = validationResult(req);
             if (!errors.isEmpty()) {
                 return res.status(400).json({ errors: errors.array() });
-            }
-            const id = parseInt(req.params.id);
+            }            
             const user = req.body;
-            users.updateUser(id, user, res);
+            users.updateUser(user, res);
         }],
 
     postUser: [
@@ -58,7 +57,7 @@ module.exports = {
             .withMessage('Password is required.')
             .isLength({ min: 8 })
             .withMessage('Password must have min 8 characters.'),
-        (req, res) => {
+        (req, res, next) => {
             const errors = validationResult(req);
             if (!errors.isEmpty()) {
                 return res.status(400).json({ errors: errors.array() });
@@ -68,15 +67,18 @@ module.exports = {
         }],
 
     deleteUser: [
-        param('id')
-            .isInt()
-            .withMessage('Invalid ID format (integer).'),
-        (req, res) => {
+        check('email')
+            .exists()
+            .withMessage('Email is required.')
+            .isEmail()
+            .withMessage('Invalid Email format (email@domain.com).')
+            .toLowerCase(),
+        (req, res, next) => {
             const errors = validationResult(req);
             if (!errors.isEmpty()) {
                 return res.status(400).json({ errors: errors.array() });
             }
-            const id = parseInt(req.params.id);
-            users.deleteUser(id, res);
+            const email = req.body.email;
+            users.deleteUser(email, res);
         }]
 }

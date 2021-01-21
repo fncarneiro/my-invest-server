@@ -1,26 +1,22 @@
-class Tables {
-    init(conection) {
-        this.conection = conection;
-        this.createTables();
-    }
+const pool = require('../infrastructure/conection');
 
-    createTables() {
-        const sqlUser = `CREATE TABLE IF NOT EXISTS users (
+exports.createTables = () => {
+    const sqlUser = `CREATE TABLE IF NOT EXISTS users (
             id_user int NOT NULL AUTO_INCREMENT,
             email varchar(100) NOT NULL,
             password varchar(100) NOT NULL,
             PRIMARY KEY (id_user),
             UNIQUE KEY email_UNIQUE (email)
-          ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4`;    
-        
-        const sqlInvestment = `CREATE TABLE IF NOT EXISTS investments (
+          ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4`;
+
+    const sqlInvestment = `CREATE TABLE IF NOT EXISTS investments (
             id_investment int NOT NULL AUTO_INCREMENT,
             period date NOT NULL,
             PRIMARY KEY (id_investment),
             UNIQUE KEY period_UNIQUE (period)) 
-            ENGINE=InnoDB DEFAULT CHARSET=utf8mb4`;  
+            ENGINE=InnoDB DEFAULT CHARSET=utf8mb4`;
 
-        const sqlStock = `CREATE TABLE IF NOT EXISTS stocks (
+    const sqlStock = `CREATE TABLE IF NOT EXISTS stocks (
             id_stock int NOT NULL AUTO_INCREMENT,
             stock_name varchar(6) NOT NULL,
             by_amount int NOT NULL,
@@ -35,20 +31,17 @@ class Tables {
             PRIMARY KEY (id_stock),
             KEY id_investment_idx (id_investment),
             CONSTRAINT id_investment FOREIGN KEY (id_investment) REFERENCES investments (id_investment) ON DELETE CASCADE) 
-            ENGINE=InnoDB DEFAULT CHARSET=utf8mb4`;          
-              
+            ENGINE=InnoDB DEFAULT CHARSET=utf8mb4`;
 
-        const sql = [sqlUser, sqlInvestment, sqlStock];
+    const sql = [sqlUser, sqlInvestment, sqlStock];
 
-        sql.forEach((sql) => {
-            this.conection.query(sql, (erro) => {
-                if (erro) {
-                    console.log(erro);
-                } else {
-                    console.log(`Table ${sql.substring(27,33)} verified.`);
-                }
+    sql.forEach((sql) => {
+        pool.execQuery(sql)
+            .then((result) => {                
+                console.log(`Table ${sql.substring(27, 33)} verified.`);
             })
-        })
-    }
+            .catch((error) => {
+                console.log(error);
+            })
+    })
 }
-module.exports = new Tables;

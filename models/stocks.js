@@ -1,207 +1,176 @@
-const conection = require('../infrastructure/conection');
+const pool = require('../infrastructure/conection');
 
-class stock {
-    createStock(stock, res) {
+module.exports = {
+    async createStock(stock, res) {
         const sqlInsert = 'INSERT INTO stocks SET ?';
-        const sqlSearch = 'SELECT * FROM stocks WHERE id_investment = ?';
+        const sqlSearch = 'SELECT id_stock FROM stocks WHERE id_investment = ?';
 
-        conection.getConnection((error, conn) => {
-            if (error) { return res.status(500).json(error) }
+        try {
+            const resultSearch = await pool.execQuery(sqlSearch, stock.id_investment);
 
-            conn.query(sqlSearch, stock.id_investment, (error, result) => {
-                if (error) {
-                    res.status(400).json(error)
-                } else {
-                    if (result.length == 0) {
-                        res.status(409).json({ msg: 'Investment not found.', id_investment: stock.id_investment })
-                    } else {
-                        conn.query(sqlInsert, stock, (error, result) => {
-                            if (error) {
-                                res.status(400).json(error)
-                            } else {
-                                const response = {
-                                    msg: 'Stock created.',
-                                    stock: {
-                                        id_stock: result.insertId,
-                                        id_investment: stock.id_investment,
-                                        stock_name: stock.stock_name,
-                                        by_amount: stock.by_amount,
-                                        by_price: stock.by_price,
-                                        by_tax: stock.by_tax,
-                                        target_profit: stock.target_profit,
-                                        sell_profit: stock.sellprofit,
-                                        sell_amount: stock.sell_amount,
-                                        sell_tax: stock.sell_tax,
-                                        note: stock.note,
-                                        request: {
-                                            type: 'POST',
-                                            description: 'Insert a stock.',
-                                            url: process.env.API_HOST + ':' + process.env.API_PORT + '/stocks/' + result.insertId
-                                        }
-                                    }
-                                }
-                                res.status(201).json(response);
-                            }
-                        });
+            if (resultSearch.length == 0) {
+                return res.status(409).json({ msg: 'Investment not found.', id_investment: stock.id_investment })
+            } else {
+                const resultInsert = await pool.execQuery(sqlInsert, stock);
+
+                const response = {
+                    msg: 'Stock created.',
+                    stock: {
+                        id_stock: resultInsert.insertId,
+                        id_investment: stock.id_investment,
+                        stock_name: stock.stock_name,
+                        by_amount: stock.by_amount,
+                        by_price: stock.by_price,
+                        by_tax: stock.by_tax,
+                        target_profit: stock.target_profit,
+                        sell_profit: stock.sell_profit,
+                        sell_amount: stock.sell_amount,
+                        sell_tax: stock.sell_tax,
+                        note: stock.note,
+                        request: {
+                            type: 'POST',
+                            description: 'Insert a stock.',
+                            url: process.env.HOST + ':' + process.env.PORT + '/stocks/' + resultInsert.insertId
+                        }
                     }
                 }
-            });
-            conn.release();
-        });
-    }
+                return res.status(201).json(response);
+            }
+        } catch (error) {
+            return res.status(400).json(error)
+        }
+    },
 
-    updateStock(id, stock, res) {
+    async updateStock(id, stock, res) {
         const sqlUpdate = 'UPDATE stocks SET ? where id_stock = ?';
 
-        conection.getConnection((error, conn) => {
-            if (error) { return res.status(500).json(error) }
+        try {
+            const resultUpdate = await pool.execQuery(sqlUpdate, [stock, id]);
 
-            conn.query(sqlUpdate, [stock, id], (error, result) => {
-                if (error) {
-                    res.status(400).json(error)
-                } else {
-                    if (result.affectedRows == 0) {
-                        res.status(409).json({ msg: 'Id not found.', id_stocks: id })
-                    } else {
-                        const response = {
-                            msg: 'Stock updated.',
-                            stock: {
-                                id_stock: id,
-                                id_investment: stock.id_investment,
-                                stock_name: stock.stock_name,
-                                by_amount: stock.by_amount,
-                                by_price: stock.by_price,
-                                by_tax: stock.by_tax,
-                                target_profit: stock.target_profit,
-                                sell_profit: stock.sellprofit,
-                                sell_amount: stock.sell_amount,
-                                sell_tax: stock.sell_tax,
-                                note: stock.note,
-                                request: {
-                                    type: 'PUT',
-                                    description: 'Update a specific stock.',
-                                    url: process.env.API_HOST + ':' + process.env.API_PORT + '/stocks/' + id
-                                }
-                            }
+            if (resultUpdate.affectedRows == 0) {
+                return res.status(409).json({ msg: 'Id not found.', id_stocks: id })
+            } else {
+                const response = {
+                    msg: 'Stock updated.',
+                    stock: {
+                        id_stock: id,
+                        id_investment: stock.id_investment,
+                        stock_name: stock.stock_name,
+                        by_amount: stock.by_amount,
+                        by_price: stock.by_price,
+                        by_tax: stock.by_tax,
+                        target_profit: stock.target_profit,
+                        sell_profit: stock.sellprofit,
+                        sell_amount: stock.sell_amount,
+                        sell_tax: stock.sell_tax,
+                        note: stock.note,
+                        request: {
+                            type: 'PUT',
+                            description: 'Update a specific stock.',
+                            url: process.env.HOST + ':' + process.env.PORT + '/stocks/' + id
                         }
-                        res.status(202).json(response);
                     }
                 }
-            });
-            conn.release();
-        });
-    }
+                return res.status(202).json(response);
+            }
+        } catch (error) {
+            return res.status(400).json(error)
+        }
+    },
 
-    listStocks(res) {
-        const sqlList = 'SELECT * FROM stocks order by id_stock';
-        conection.getConnection((error, conn) => {
-            if (error) { return res.status(500).json(error) }
+    async listStocks(res) {
+        const sqlList = 'SELECT * FROM stocks order by stock_name';
+        try {
+            const resultList = await pool.execQuery(sqlList);
 
-            conn.query(sqlList, (error, result) => {
-                if (error) {
-                    res.status(400).json(error)
-                } else {
-                    const response = {
-                        records: result.length,
-                        stocks: result.map(stock => {
-                            return {
-                                id_stock: stock.id_stocks,
-                                id_investment: stock.id_investment,
-                                stock_name: stock.stock_name,
-                                by_amount: stock.by_amount,
-                                by_price: stock.by_price,
-                                by_tax: stock.by_tax,
-                                target_profit: stock.target_profit,
-                                sell_profit: stock.sellprofit,
-                                sell_amount: stock.sell_amount,
-                                sell_tax: stock.sell_tax,
-                                note: stock.note,
-                                request: {
-                                    type: 'GET',
-                                    description: 'List all stocks.',
-                                    url: process.env.API_HOST + ':' + process.env.API_PORT + '/stocks/' + stock.id_stocks
-                                }
-                            }
-                        })
-                    }
-                    res.status(200).json(response);
-                }
-            });
-            conn.release();
-        });
-    }
-
-    searchForId(id, res) {
-        const sqlSearch = 'SELECT * FROM stocks WHERE id_stock= ?';
-        conection.getConnection((error, conn) => {
-            if (error) { return res.status(500).json(error) }
-
-            conn.query(sqlSearch, id, (error, result) => {
-                if (error) {
-                    res.status(400).json(error)
-                } else {
-                    if (result.length == 0) {
-                        res.status(404).json({ msg: 'Id not found', id_stocks: id })
-                    } else {
-                        const response = {
-                            records: result.length,
-                            stock: {
-                                id_stock: result[0].id_stocks,
-                                id_investment: result[0].id_investment,
-                                stock_name: result[0].stock_name,
-                                by_amount: result[0].by_amount,
-                                by_price: result[0].by_price,
-                                by_tax: result[0].by_tax,
-                                target_profit: result[0].target_profit,
-                                sell_profit: result[0].sellprofit,
-                                sell_amount: result[0].sell_amount,
-                                sell_tax: result[0].sell_tax,
-                                note: result[0].note,
-                                request: {
-                                    type: 'GET',
-                                    description: 'List a specific stock.',
-                                    url: process.env.API_HOST + ':' + process.env.API_PORT + '/stocks/' + id
-                                }
-                            }
+            const response = {
+                records: resultList.length,
+                stocks: resultList.map(stock => {
+                    return {
+                        id_stock: stock.id_stocks,
+                        id_investment: stock.id_investment,
+                        stock_name: stock.stock_name,
+                        by_amount: stock.by_amount,
+                        by_price: stock.by_price,
+                        by_tax: stock.by_tax,
+                        target_profit: stock.target_profit,
+                        sell_profit: stock.sellprofit,
+                        sell_amount: stock.sell_amount,
+                        sell_tax: stock.sell_tax,
+                        note: stock.note,
+                        request: {
+                            type: 'GET',
+                            description: 'List all stocks.',
+                            url: process.env.HOST + ':' + process.env.PORT + '/stocks/' + stock.id_stocks
                         }
-                        res.status(200).json(response);
+                    }
+                })
+            }
+            return res.status(200).json(response);
+        } catch (error) {
+            return res.status(400).json(error)
+        }
+    },
+
+    async getStock(id, res) {
+        const sqlSearch = 'SELECT * FROM stocks WHERE id_stock = ?';
+        try {
+            const resultSearch = await pool.execQuery(sqlSearch, id);
+
+            if (resultSearch.length == 0) {
+                return res.status(404).json({ msg: 'Id not found', id_stocks: id })
+            } else {
+                const response = {
+                    records: resultSearch.length,
+                    stock: {
+                        id_stock: resultSearch[0].id_stocks,
+                        id_investment: resultSearch[0].id_investment,
+                        stock_name: resultSearch[0].stock_name,
+                        by_amount: resultSearch[0].by_amount,
+                        by_price: resultSearch[0].by_price,
+                        by_tax: resultSearch[0].by_tax,
+                        target_profit: resultSearch[0].target_profit,
+                        sell_profit: resultSearch[0].sellprofit,
+                        sell_amount: resultSearch[0].sell_amount,
+                        sell_tax: resultSearch[0].sell_tax,
+                        note: resultSearch[0].note,
+                        request: {
+                            type: 'GET',
+                            description: 'List a specific stock.',
+                            url: process.env.HOST + ':' + process.env.PORT + '/stocks/' + id
+                        }
                     }
                 }
-            });
-            conn.release();
-        });
-    }
+                return res.status(200).json(response);
+            }
+        } catch (error) {
+            return res.status(400).json(error)
+        }
+    },
 
-    deleteStock(id, res) {
+    async deleteStock(id, res) {
         const sqlDelete = 'DELETE FROM stocks where id_stock = ?';
-        conection.getConnection((error, conn) => {
-            if (error) { return res.status(500).json(error) }
+        try {
+            const resultDelete = await pool.execQuery(sqlDelete, id);
 
-            conn.query(sqlDelete, id, (error, result) => {
-                if (error) {
-                    res.status(400).json(error)
-                } else {
-                    if (result.affectedRows == 0) {
-                        res.status(409).json({ msg: 'Id not found.', id_stocks: id })
-                    } else {
-                        const response = {
-                            msg: 'Stock deleted',
-                            stock: {
-                                id_stocks: id,
-                                request: {
-                                    type: 'DELETE',
-                                    description: 'Delete a specific stock.',
-                                    url: process.env.API_HOST + ':' + process.env.API_PORT + '/stocks/'
-                                }
-                            }
+            if (resultDelete.affectedRows == 0) {
+                return res.status(409).json({ msg: 'Id not found.', id_stocks: id })
+            } else {
+                const response = {
+                    msg: 'Stock deleted',
+                    stock: {
+                        id_stocks: id,
+                        request: {
+                            type: 'DELETE',
+                            description: 'Delete a specific stock.',
+                            url: process.env.HOST + ':' + process.env.PORT + '/stocks/'
                         }
-                        res.status(202).json(response);
                     }
                 }
-            });
-            conn.release();
-        });
+                return res.status(202).json(response);
+            }
+        } catch (error) {
+            return res.status(400).json(error)
+        }
     }
 }
-
-module.exports = new stock;    

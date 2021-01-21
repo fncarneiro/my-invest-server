@@ -1,187 +1,155 @@
 const moment = require('moment');
-const conection = require('../infrastructure/conection');
+const pool = require('../infrastructure/conection');
 
-class investment {
-    createInvestment(investment, res) {
+module.exports = {
+    async createInvestment(investment, res) {
         const sqlInsert = 'INSERT INTO investments SET ?';
-        const sqlSearch = 'SELECT * FROM investments WHERE period = ?';
+        const sqlSearch = 'SELECT id_investment, period FROM investments WHERE period = ?';
         const period = moment.utc(investment.period, 'YYYY-MM-DD hh:mm:ss', true).format('YYYY-MM-DD');
 
-        conection.getConnection((error, conn) => {
-            if (error) { return res.status(500).json(error) }
+        try {
+            const resultSearch = await pool.execQuery(sqlSearch, period);
 
-            conn.query(sqlSearch, period, (error, result) => {
-                if (error) {
-                    res.status(400).json(error)
-                } else {
-                    if (result.length > 0) {
-                        res.status(409).json({ msg: 'Period already exists.', period: period })
-                    } else {
-                        const investmentOk = { ...investment, period };
-                        conn.query(sqlInsert, investmentOk, (error, result) => {
-                            if (error) {
-                                res.status(400).json(error)
-                            } else {
-                                const response = {
-                                    msg: 'Investment created.',
-                                    investment: {
-                                        id_investment: result.insertId,
-                                        period: investmentOk.period,
-                                        request: {
-                                            type: 'POST',
-                                            description: 'Insert a investment.',
-                                            url: process.env.API_HOST + ':' + process.env.API_PORT + '/investments/' + result.insertId
-                                        }
-                                    }
-                                }
-                                res.status(201).json(response);
-                            }
-                        });
+            if (resultSearch.length > 0) {
+                return res.status(409).json({ msg: 'Period already exists.', period: period });
+            } else {
+                const investmentOk = { ...investment, period };
+                const resultInsert = await pool.execQuery(sqlInsert, investmentOk);
+
+                const response = {
+                    msg: 'Investment created.',
+                    investment: {
+                        id_investment: resultInsert.insertId,
+                        period: investmentOk.period,
+                        request: {
+                            type: 'POST',
+                            description: 'Insert a investment.',
+                            url: process.env.HOST + ':' + process.env.PORT + '/investments/' + resultInsert.insertId
+                        }
                     }
                 }
-            });
-            conn.release();
-        });
-    }
+                return res.status(201).json(response);
+            }
+        } catch (error) {
+            return res.status(400).json(error)
+        }
+    },
 
-    updateInvestment(id, investment, res) {
+    async updateInvestment(id, investment, res) {
         const sqlUpdate = 'UPDATE investments SET ? where id_investment = ?';
-        const sqlSearch = 'SELECT * FROM investments WHERE period = ?';
+        const sqlSearch = 'SELECT id_investment, period FROM investments WHERE period = ?';
         const period = moment.utc(investment.period, 'YYYY-MM-DD hh:mm:ss').format('YYYY-MM-DD');
+        try {
+            const resultSearch = await pool.execQuery(sqlSearch, period);
 
-        conection.getConnection((error, conn) => {
-            if (error) { return res.status(500).json(error) }
+            if (resultSearch.length > 0) {
+                return res.status(409).json({ msg: 'Period already exists.', period: period })
+            } else {
+                const investmentOk = { ...investment, period };
+                const resultUpdate = await pool.execQuery(sqlUpdate, [investmentOk, id]);
 
-            conn.query(sqlSearch, period, (error, result) => {
-                if (error) {
-                    res.status(400).json(error)
-                } else {
-                    if (result.length > 0) {
-                        res.status(409).json({ msg: 'Period already exists.', period: period })
-                    } else {
-                        const investmentOk = { ...investment, period };
-                        conn.query(sqlUpdate, [investmentOk, id], (error, result) => {
-                            if (error) {
-                                res.status(400).json(error)
-                            } else {
-                                if (result.affectedRows == 0) {
-                                    res.status(409).json({ msg: 'Id not found.', id_investment: id })
-                                } else {
-                                    const response = {
-                                        msg: 'Investment updated.',
-                                        investment: {
-                                            id_investment: id,
-                                            period: investmentOk.period,
-                                            request: {
-                                                type: 'PUT',
-                                                description: 'Update a specific investment.',
-                                                url: process.env.API_HOST + ':' + process.env.API_PORT + '/investments/' + id
-                                            }
-                                        }
-                                    }
-                                    res.status(202).json(response);
-                                }
-                            }
-                        });
-                    }
-                }
-            });
-            conn.release();
-        });
-    }
-
-    listInvestment(res) {
-        const sqlList = 'SELECT * FROM investments order by id_investment';
-        conection.getConnection((error, conn) => {
-            if (error) { return res.status(500).json(error) }
-
-            conn.query(sqlList, (error, result) => {
-                if (error) {
-                    res.status(400).json(error)
+                if (resultUpdate.affectedRows == 0) {
+                    return res.status(409).json({ msg: 'Id not found.', id_investment: id })
                 } else {
                     const response = {
-                        records: result.length,
-                        investments: result.map(investment => {
-                            return {
-                                id_investment: investment.id_investment,
-                                period: investment.period,
-                                request: {
-                                    type: 'GET',
-                                    description: 'List all investments.',
-                                    url: process.env.API_HOST + ':' + process.env.API_PORT + '/investments/' + investment.id_investment
-                                }
-                            }
-                        })
-                    }
-                    res.status(200).json(response);
-                }
-            });
-            conn.release();
-        });
-    }
-
-    searchForId(id, res) {
-        const sqlSearch = 'SELECT * FROM investments WHERE id_investment= ?';
-        conection.getConnection((error, conn) => {
-            if (error) { return res.status(500).json(error) }
-
-            conn.query(sqlSearch, id, (error, result) => {
-                if (error) {
-                    res.status(400).json(error)
-                } else {
-                    if (result.length == 0) {
-                        res.status(404).json({ msg: 'Id not found', id_investment: id })
-                    } else {
-                        const response = {
-                            records: result.length,
-                            investment: {
-                                id_investment: id,
-                                period: result[0].period,
-                                request: {
-                                    type: 'GET',
-                                    description: 'List a specific investment.',
-                                    url: process.env.API_HOST + ':' + process.env.API_PORT + '/investments/' + id
-                                }
+                        msg: 'Investment updated.',
+                        investment: {
+                            id_investment: id,
+                            period: investmentOk.period,
+                            request: {
+                                type: 'PUT',
+                                description: 'Update a specific investment.',
+                                url: process.env.HOST + ':' + process.env.PORT + '/investments/' + id
                             }
                         }
-                        res.status(200).json(response);
                     }
+                    res.status(202).json(response);
                 }
-            });
-            conn.release();
-        });
-    }
+            }
+        } catch (error) {
+            return res.status(400).json(error)
+        }
+    },
 
-    deleteInvestment(id, res) {
-        const sqlDelete = 'DELETE FROM investments where id_investment = ?';
-        conection.getConnection((error, conn) => {
-            if (error) { return res.status(500).json(error) }
+    async listInvestment(res) {
+        try {
+            const sqlList = 'SELECT id_investment, period FROM investments order by period';
 
-            conn.query(sqlDelete, id, (error, result) => {
-                if (error) {
-                    res.status(400).json(error)
-                } else {
-                    if (result.affectedRows == 0) {
-                        res.status(409).json({ msg: 'Id not found.', id_investment: id })
-                    } else {
-                        const response = {
-                            msg: 'Investment deleted',
-                            investment: {
-                                id_investment: id,
-                                request: {
-                                    type: 'DELETE',
-                                    description: 'Delete a specific investment.',
-                                    url: process.env.API_HOST + ':' + process.env.API_PORT + '/investments/'
-                                }
-                            }
+            const resultList = await pool.execQuery(sqlList);
+
+            const response = {
+                records: resultList.length,
+                investments: resultList.map(investment => {
+                    return {
+                        id_investment: investment.id_investment,
+                        period: investment.period,
+                        request: {
+                            type: 'GET',
+                            description: 'List all investments.',
+                            url: process.env.HOST + ':' + process.env.PORT + '/investments/' + investment.id_investment
                         }
-                        res.status(202).json(response);
+                    }
+                })
+            }
+            return res.status(200).json(response);
+        } catch (error) {
+            return res.status(400).json(error)
+        }
+    },
+
+    async getInvestment(id, res) {
+        try {
+            const sqlSearch = 'SELECT id_investment, period FROM investments WHERE id_investment = ?';
+
+            const resultSearch = await pool.execQuery(sqlSearch, id);
+
+            if (resultSearch.length == 0) {
+                return res.status(404).json({ msg: 'Id not found', id_investment: id })
+            } else {
+                const response = {
+                    records: resultSearch.length,
+                    investment: {
+                        id_investment: id,
+                        period: resultSearch[0].period,
+                        request: {
+                            type: 'GET',
+                            description: 'List a specific investment.',
+                            url: process.env.HOST + ':' + process.env.PORT + '/investments/' + id
+                        }
                     }
                 }
-            });
-            conn.release();
-        });
-    }
-}
+                return res.status(200).json(response);
+            }
+        }
+        catch (error) {
+            return res.status(400).json(error)
+        }
+    },
 
-module.exports = new investment;    
+    async deleteInvestment(id, res) {
+        try {
+            const sqlDelete = 'DELETE FROM investments where id_investment = ?';
+
+            const resultDelete = await pool.execQuery(sqlDelete, id);
+
+            if (resultDelete.affectedRows == 0) {
+                return res.status(409).json({ msg: 'Id not found.', id_investment: id })
+            } else {
+                const response = {
+                    msg: 'Investment deleted',
+                    investment: {
+                        id_investment: id,
+                        request: {
+                            type: 'DELETE',
+                            description: 'Delete a specific investment.',
+                            url: process.env.HOST + ':' + process.env.PORT + '/investments/'
+                        }
+                    }
+                }
+                return res.status(202).json(response);
+            }
+        } catch (error) {
+            return res.status(400).json(error)
+        }
+    }
+}  

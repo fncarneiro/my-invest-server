@@ -17,7 +17,7 @@ module.exports = {
                 return res.status(400).json({ errors: errors.array() });
             }
             const id = parseInt(req.params.id);
-            investments.searchForId(id, res);
+            investments.getInvestment(id, res);
         }],
 
     putInvestment: [
@@ -25,6 +25,8 @@ module.exports = {
             .isInt()
             .withMessage('Invalid ID type (integer).'),
         check('period')
+            .exists()
+            .withMessage('Period (yyyy-mm-dd) is required.')
             .isISO8601()
             .withMessage('Invalid Period format (yyyy-mm-dd).')
             .isDate({ format: 'yyyy-mm-dd', strictMode: true })
@@ -50,6 +52,8 @@ module.exports = {
 
     postInvestment: [
         check('period')
+            .exists()
+            .withMessage('Period (yyyy-mm-dd) is required.')
             .isISO8601()
             .withMessage('Invalid Period format (yyyy-mm-dd).')
             .isDate({ format: 'yyyy-mm-dd', strictMode: true })

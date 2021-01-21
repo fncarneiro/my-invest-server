@@ -1,5 +1,5 @@
 const login = require('../models/login');
-const { check, param, validationResult } = require('express-validator');
+const { check, validationResult } = require('express-validator');
 
 exports.postLogin = [
     check('email')
