@@ -3,7 +3,7 @@ const pool = require('../infrastructure/conection');
 module.exports = {
     async createStock(stock, res) {
         const sqlInsert = 'INSERT INTO stocks SET ?';
-        const sqlSearch = 'SELECT id_stock FROM stocks WHERE id_investment = ?';
+        const sqlSearch = 'SELECT id_investment FROM investments WHERE id_investment = ?';
 
         try {
             const resultSearch = await pool.execQuery(sqlSearch, stock.id_investment);

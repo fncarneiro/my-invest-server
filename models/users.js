@@ -27,7 +27,7 @@ module.exports = {
                             request: {
                                 type: 'POST',
                                 description: 'Insert a user.',
-                                url: process.env.HOST + ':' + process.env.PORT + '/users/'
+                                url: process.env.HOST + ':' + process.env.PORT + '/users/' + user.email
                             }
                         }
                     }
@@ -64,7 +64,7 @@ module.exports = {
                             request: {
                                 type: 'PUT',
                                 description: 'Update user password.',
-                                url: process.env.HOST + ':' + process.env.PORT + '/users/'
+                                url: process.env.HOST + ':' + process.env.PORT + '/users/' + resultList[0].email
                             }
                         }
                     }
@@ -91,7 +91,7 @@ module.exports = {
                             request: {
                                 type: 'GET',
                                 description: 'List all users.',
-                                url: process.env.HOST + ':' + process.env.PORT + '/users/'
+                                url: process.env.HOST + ':' + process.env.PORT + '/users/' + user.email
                             }
                         }
                     }

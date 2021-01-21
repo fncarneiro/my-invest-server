@@ -3,7 +3,7 @@ const { check, param, validationResult } = require('express-validator');
 
 
 module.exports = {
-    listStocks:[
+    listStocks: [
         (req, res, next) => {
             stocks.listStocks(res);
         }],
@@ -26,6 +26,8 @@ module.exports = {
             .isInt()
             .withMessage('Invalid ID type (integer).'),
         check('stock_name')
+            .exists()
+            .withMessage('Stock name is required.')
             .isLength(5, 10)
             .withMessage('Stock Name must have 5 characters minimum.')
             .toUpperCase(),
@@ -50,6 +52,8 @@ module.exports = {
 
     postStock: [
         check('stock_name')
+            .exists()
+            .withMessage('Stock name is required.')
             .isLength({ min: 5, max: 10 })
             .withMessage('Stock Name must have from 5 to 10 characters.')
             .toUpperCase(),

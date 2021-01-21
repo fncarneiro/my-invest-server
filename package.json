@@ -10,8 +10,24 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "nodemon server.js"
   },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/fncarneiro/my-invest-server.git"
+  },
+  "keywords": [
+    "investment",
+    "trade",
+    "stocks",
+    "RESTFULL",
+    "API",
+    "REST API"
+  ],
   "author": "Fernando N Carneiro",
   "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/fncarneiro/my-invest-server/issues"
+  },
+  "homepage": "https://github.com/fncarneiro/my-invest-server#readme",
   "dependencies": {
     "bcrypt": "^5.0.0",
     "compression": "^1.7.4",
