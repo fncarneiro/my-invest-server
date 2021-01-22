@@ -123,7 +123,7 @@ module.exports = {
                 const response = {
                     records: resultSearch.length,
                     stock: {
-                        id_stock: resultSearch[0].id_stocks,
+                        id_stock: resultSearch[0].id_stock,
                         id_investment: resultSearch[0].id_investment,
                         stock_name: resultSearch[0].stock_name,
                         by_amount: resultSearch[0].by_amount,
