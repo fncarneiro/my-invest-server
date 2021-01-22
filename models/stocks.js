@@ -87,7 +87,7 @@ module.exports = {
                 records: resultList.length,
                 stocks: resultList.map(stock => {
                     return {
-                        id_stock: stock.id_stocks,
+                        id_stock: stock.id_stock,
                         id_investment: stock.id_investment,
                         stock_name: stock.stock_name,
                         by_amount: stock.by_amount,
@@ -101,7 +101,7 @@ module.exports = {
                         request: {
                             type: 'GET',
                             description: 'List all stocks.',
-                            url: process.env.HOST + ':' + process.env.PORT + '/stocks/' + stock.id_stocks
+                            url: process.env.HOST + ':' + process.env.PORT + '/stocks/' + stock.id_stock
                         }
                     }
                 })

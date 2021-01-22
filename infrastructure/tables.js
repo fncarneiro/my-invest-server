@@ -24,7 +24,7 @@ exports.createTables = () => {
             by_tax decimal(12,2) DEFAULT NULL,
             target_profit decimal(12,2) NOT NULL,
             sell_profit decimal(12,2) NOT NULL,
-            sell_amouunt int DEFAULT NULL,
+            sell_amount int DEFAULT NULL,
             sell_tax decimal(12,2) DEFAULT NULL,
             note varchar(200) DEFAULT NULL,
             id_investment int NOT NULL,

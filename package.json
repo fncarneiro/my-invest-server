@@ -7,8 +7,9 @@
     "node": "14.15.x"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "nodemon server.js"
+    "test": "SET NODE_ENV=test && nodemon server.js",
+    "production": "SET NODE_ENV=production && node server.js",
+    "start": "SET NODE_ENV=development && nodemon server.js"
   },
   "repository": {
     "type": "git",

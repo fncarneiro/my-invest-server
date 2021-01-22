@@ -1,4 +1,15 @@
-const dotenv = require('dotenv').config();
+const node_env = process.env.NODE_ENV.trim();
+switch (node_env) {
+    case 'production':
+        require('dotenv').config({ path: './config/env/.env.production' });        
+    case 'test':
+        require('dotenv').config({ path: './config/env/.env.test' });       
+        break;
+    default:
+        require('dotenv').config({ path: './config/env/.env.development' });        
+        break;
+} 
+
 const customExpress = require('./config/customExpress');
 const tables = require('./infrastructure/tables');
 

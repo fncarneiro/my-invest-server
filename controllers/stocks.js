@@ -1,7 +1,6 @@
 const stocks = require('../models/stocks');
 const { check, param, validationResult } = require('express-validator');
 
-
 module.exports = {
     listStocks: [
         (req, res, next) => {
@@ -25,20 +24,21 @@ module.exports = {
         param('id')
             .isInt()
             .withMessage('Invalid ID type (integer).'),
-        check('stock_name')
+        check(['stock_name', 'id_investment', 'by_amount', 'by_price'])
             .exists()
-            .withMessage('Stock name is required.')
+            .withMessage('Field is required.'),
+        check('stock_name')
             .isLength(5, 10)
             .withMessage('Stock Name must have 5 characters minimum.')
             .toUpperCase(),
         check(['by_amount', 'sell_amount', 'id_investment'])
             .isInt({ min: 0, max: 999999999 })
-            .withMessage('Invalid value type (integer).'),
+            .withMessage('Invalid value type (positive integer).'),
         check(['by_price', 'by_tax', 'target_profit', 'sell_profit', 'sell_tax'])
             .isFloat({ min: 0.0, max: 9999999999.99 })
-            .withMessage('Invalid value type (decimal(12,2).'),
-        check('note') // nao funciona
-            .isLength(0, 200)
+            .withMessage('Invalid value type (positive decimal(12,2).'),
+        check('note') 
+            .isLength({min: 0, max: 200 })
             .withMessage('Note must have 200 characters max.'),
         (req, res, next) => {
             const errors = validationResult(req);
@@ -51,18 +51,22 @@ module.exports = {
         }],
 
     postStock: [
-        check('stock_name')
+        check(['stock_name', 'id_investment', 'by_amount', 'by_price'])
             .exists()
-            .withMessage('Stock name is required.')
+            .withMessage('Field is required.'),
+        check('stock_name')
             .isLength({ min: 5, max: 10 })
             .withMessage('Stock Name must have from 5 to 10 characters.')
             .toUpperCase(),
         check(['id_investment', 'by_amount', 'sell_amount'])
             .isInt({ min: 0, max: 999999999 })
-            .withMessage('Invalid value type (integer).'),
+            .withMessage('Invalid value type (positive integer).'),
         check(['by_price', 'by_tax', 'target_profit', 'sell_profit', 'sell_tax'])
             .isFloat({ min: 0.0, max: 9999999999.99 })
-            .withMessage('Invalid value type (decimal(10,2).'),
+            .withMessage('Invalid value type (positive decimal(10,2).'),
+        check('note') 
+            .isLength({ min: 0, max: 200 })
+            .withMessage('Note must have 200 characters max.'),
         (req, res, next) => {
             const errors = validationResult(req);
             if (!errors.isEmpty()) {
