@@ -1,4 +1,4 @@
-<h1 align="center">Welcome to my-invest-server 👋</h1>
+<h1 align="center">Welcome to My Invest Server Rest API 👋</h1>
 <p>
   <img alt="Version" src="https://img.shields.io/badge/version-1.0.0-blue.svg?cacheSeconds=2592000" />
   <img src="https://img.shields.io/badge/node-14.15.x-blue.svg" />
@@ -12,7 +12,7 @@
     <img alt="License: ISC" src="https://img.shields.io/github/license/fncarneiro/my-invest-server" />
   </a>
   <a href="https://twitter.com/o\_fe" target="_blank">
-    <img alt="Twitter: o\_fe" src="https://img.shields.io/twitter/follow/o\_fe.svg?style=social" />
+    <img alt="Twitter: fncarneiro" src="https://img.shields.io/twitter/follow/fncarneiro.svg?style=social" />
   </a>
 </p>
 
