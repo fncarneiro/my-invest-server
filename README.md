@@ -48,7 +48,7 @@ npm run test
 
 * Twitter: [@o_fe](https://twitter.com/o_fe)
 * Github: [@fncarneiro](https://github.com/fncarneiro)
-* LinkedIn: [@fncarneiro](linkedin.com/in/fernando-carneiro-17b886184)
+* LinkedIn: [@fncarneiro](https://www.linkedin.com/in/fernando-carneiro-17b886184/)
 
 ## 🤝 Contributing
 
