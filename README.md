@@ -12,7 +12,7 @@
     <img alt="License: ISC" src="https://img.shields.io/github/license/fncarneiro/my-invest-server" />
   </a>
   <a href="https://twitter.com/o\_fe" target="_blank">
-    <img alt="Twitter: fncarneiro" src="https://img.shields.io/twitter/follow/fncarneiro.svg?style=social" />
+    <img alt="Twitter: o/_fe" src="https://img.shields.io/twitter/follow/o/_fe.svg?style=social" />
   </a>
 </p>
 
