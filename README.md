@@ -11,8 +11,8 @@
   <a href="https://github.com/fncarneiro/my-invest-server/blob/master/LICENSE" target="_blank">
     <img alt="License: ISC" src="https://img.shields.io/github/license/fncarneiro/my-invest-server" />
   </a>
-  <a href="https://twitter.com/o\_fe" target="_blank">
-    <img alt="Twitter: o\_fe" src="https://img.shields.io/twitter/follow/o\_fe.svg?style=social" />
+  <a href="https://twitter.com/o_fe" target="_blank">
+    <img alt="Twitter: o_fe" src="https://img.shields.io/twitter/follow/o_fe.svg?style=social" />
   </a>
 </p>
 
@@ -46,7 +46,7 @@ npm run test
 
 👤 **Fernando N Carneiro**
 
-* Twitter: [@o\_fe](https://twitter.com/o\_fe)
+* Twitter: [@o_fe](https://twitter.com/o_fe)
 * Github: [@fncarneiro](https://github.com/fncarneiro)
 * LinkedIn: [@fncarneiro](linkedin.com/in/fernando-carneiro-17b886184)
 
