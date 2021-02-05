@@ -15,6 +15,7 @@
     <img alt="Twitter: o_fe" src="https://img.shields.io/twitter/follow/o_fe.svg?style=social" />
   </a>
 </p>
+![GitHub](https://img.shields.io/github/license/fncarneiro/my-invest-server?style=plastic)
 
 
 > My Invest Server Rest API
