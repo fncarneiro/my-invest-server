@@ -7,7 +7,7 @@
     "node": "14.15.x"
   },
   "scripts": {
-    "test": "SET NODE_ENV=test && nodemon server.js",
+    "test": "SET NODE_ENV=test && mocha --timeout 10000",
     "production": "SET NODE_ENV=production && node server.js",
     "start": "SET NODE_ENV=development && nodemon server.js"
   },
@@ -45,6 +45,9 @@
     "mysql": "^2.18.1"
   },
   "devDependencies": {
+    "chai": "^4.2.0",
+    "chai-http": "^4.3.0",
+    "mocha": "^8.2.1",
     "nodemon": "^2.0.7"
   }
 }

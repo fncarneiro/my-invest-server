@@ -4,10 +4,11 @@ exports.createTables = () => {
     const sqlUser = `CREATE TABLE IF NOT EXISTS users (
             id_user int NOT NULL AUTO_INCREMENT,
             email varchar(100) NOT NULL,
-            password varchar(100) NOT NULL,
+            password varchar(100) NOT NULL,            
+            permission_level int NOT NULL,
             PRIMARY KEY (id_user),
             UNIQUE KEY email_UNIQUE (email)
-          ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4`;
+          ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4`;           
 
     const sqlInvestment = `CREATE TABLE IF NOT EXISTS investments (
             id_investment int NOT NULL AUTO_INCREMENT,
@@ -33,7 +34,7 @@ exports.createTables = () => {
             CONSTRAINT id_investment FOREIGN KEY (id_investment) REFERENCES investments (id_investment) ON DELETE CASCADE) 
             ENGINE=InnoDB DEFAULT CHARSET=utf8mb4`;
 
-    const sql = [sqlUser, sqlInvestment, sqlStock];
+    const sql = [sqlUser, sqlInvestment, sqlStock ];
 
     sql.forEach((sql) => {
         pool.execQuery(sql)

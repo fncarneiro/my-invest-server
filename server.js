@@ -9,7 +9,7 @@ switch (node_env) {
         require('dotenv').config({ path: './config/env/.env.development' });        
         break;
 } 
-
+console.log(node_env)
 const customExpress = require('./config/customExpress');
 const tables = require('./infrastructure/tables');
 

@@ -3,7 +3,7 @@ const crypt = require('../utils/crypt');
 
 module.exports = {
     async createUser(user, res) {
-        const sqlInsert = 'INSERT INTO users (email, password) VALUES (?, ?)';
+        const sqlInsert = 'INSERT INTO users (email, password, permission_level) VALUES (?, ?, ?)';
         const sqlSearch = 'SELECT id_user, email, password FROM users WHERE email = ?';
 
         try {
@@ -17,13 +17,14 @@ module.exports = {
                 if (!resultCrypt) {
                     return res.status(500).json(resultCrypt)
                 } else {
-                    const resultInsert = await pool.execQuery(sqlInsert, [user.email, resultCrypt]);
+                    const resultInsert = await pool.execQuery(sqlInsert, [user.email, resultCrypt, user.permission_level]);
 
                     const response = {
                         msg: 'User created.',
                         user: {
                             id_user: resultInsert.insertId,
                             email: user.email,
+                            permission_level: user.permission_level,
                             request: {
                                 type: 'POST',
                                 description: 'Insert a user.',
@@ -78,7 +79,7 @@ module.exports = {
 
 
     async listUsers(res) {
-        const sqlList = 'SELECT id_user, email, password FROM users';
+        const sqlList = 'SELECT id_user, email, password, permission_level FROM users';
         try {
             const resultList = await pool.execQuery(sqlList);
             const response = {
@@ -88,6 +89,7 @@ module.exports = {
                         user: {
                             id_user: user.id_user,
                             email: user.email,
+                            permission_level: user.permission_level,
                             request: {
                                 type: 'GET',
                                 description: 'List all users.',
@@ -104,7 +106,7 @@ module.exports = {
     },
 
     async getUser(email, res) {
-        const sqlSearch = 'SELECT id_user, email, password FROM users WHERE email = ?';
+        const sqlSearch = 'SELECT id_user, email, password, permission_level FROM users WHERE email = ?';
 
         try {
             const resultList = await pool.execQuery(sqlSearch, email);
@@ -117,6 +119,7 @@ module.exports = {
                     user: {
                         id_user: resultList[0].id_user,
                         email: resultList[0].email,
+                        permission_level: resultList[0].permission_level,
                         request: {
                             type: 'GET',
                             description: 'List a specific user.',

@@ -8,8 +8,11 @@ const pool = mysql.createPool({
     password: process.env.MYSQL_PASSWORD,
     database: process.env.MYSQL_DATABASE
 });
-// pool.on('connection', () => console.log('MySql pool => connection success'));
-// pool.on('release', () => console.log('MySql pool => connection returned'));
+console.log(process.env.MYSQL_DATABASE)
+if (process.env.NODE_ENV == 'test') {
+    pool.on('connection', () => console.log('MySql pool => connection success'));
+    pool.on('release', () => console.log('MySql pool => connection returned'));
+}
 
 process.on('SIGINT', () =>
     pool.end(err => {

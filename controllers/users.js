@@ -8,23 +8,23 @@ module.exports = {
             users.listUsers(res);
         }],
 
-    getUser: [  
+    getUser: [
         check('email')
             .exists()
             .withMessage('Email is required.')
             .isEmail()
             .withMessage('Invalid Email format (email@domain.com).')
-            .toLowerCase(),      
+            .toLowerCase(),
         (req, res, next) => {
             const errors = validationResult(req);
             if (!errors.isEmpty()) {
                 return res.status(400).json({ errors: errors.array() });
             }
-            const email = req.params.email;
+            const email = req.params.email;            
             users.getUser(email, res);
         }],
 
-    putUser: [        
+    putUser: [
         check('email')
             .exists()
             .withMessage('Email is required.')
@@ -40,7 +40,7 @@ module.exports = {
             const errors = validationResult(req);
             if (!errors.isEmpty()) {
                 return res.status(400).json({ errors: errors.array() });
-            }            
+            }
             const user = req.body;
             users.updateUser(user, res);
         }],
@@ -57,6 +57,9 @@ module.exports = {
             .withMessage('Password is required.')
             .isLength({ min: 8 })
             .withMessage('Password must have min 8 characters.'),
+        check('permission_level')
+            .isInt()
+            .withMessage('Invalid Permission Level type (integer).'),
         (req, res, next) => {
             const errors = validationResult(req);
             if (!errors.isEmpty()) {

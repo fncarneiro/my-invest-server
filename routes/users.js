@@ -8,7 +8,7 @@ module.exports = app => {
 
     app.put('/users', auth.mandatory, users.putUser);
 
-    app.post('/users', auth.mandatory, users.postUser);
+    app.post('/users', auth.optional, users.postUser);
 
     app.delete('/users', auth.mandatory,users.deleteUser);    
 }
