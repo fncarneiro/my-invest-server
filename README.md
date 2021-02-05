@@ -9,7 +9,7 @@
     <img alt="Maintenance" src="https://img.shields.io/badge/Maintained%3F-yes-green.svg" />
   </a>
   <a href="https://github.com/fncarneiro/my-invest-server/blob/master/LICENSE" target="_blank">
-    <img alt="License: ISC" src="https://img.shields.io/github/license/fncarneiro/my-invest-server" />
+    <img alt="License: ISC" src="https://img.shields.io/github/license/fncarneiro/my-invest-server/LICENCE" />
   </a>
   <a href="https://twitter.com/o_fe" target="_blank">
     <img alt="Twitter: o_fe" src="https://img.shields.io/twitter/follow/o_fe.svg?style=social" />
@@ -84,7 +84,7 @@ Query requests through `GET` method can return status codes `200`, `400`, `401`,
 
 > List all users.
 
-### [private] GET /user/<email>/
+### [private] GET /user/:email/
 
 > List ​a specific ​user.
 
@@ -119,7 +119,7 @@ Query requests through `GET` method can return status codes `200`, `400`, `401`,
 | password         | String | true     | User's password.  |
 
 
-### [private] DELETE /user/<email>/
+### [private] DELETE /user/:email/
 
 > Delete a specific ​user.
 
