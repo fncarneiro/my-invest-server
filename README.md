@@ -1,4 +1,4 @@
-<h1 align="center">Welcome to my-invest-server 👋</h1>
+<h1 align="center">Welcome to My Invest Server Rest API 👋</h1>
 <p>
   <img alt="Version" src="https://img.shields.io/badge/version-1.0.0-blue.svg?cacheSeconds=2592000" />
   <img src="https://img.shields.io/badge/node-14.15.x-blue.svg" />
@@ -12,7 +12,7 @@
     <img alt="License: ISC" src="https://img.shields.io/github/license/fncarneiro/my-invest-server" />
   </a>
   <a href="https://twitter.com/o_fe" target="_blank">
-    <img alt="Twitter: o\_fe" src="https://img.shields.io/twitter/follow/o_fe.svg?style=social" />
+    <img alt="Twitter: o_fe" src="https://img.shields.io/twitter/follow/o_fe.svg?style=social" />
   </a>
 </p>
 
@@ -255,9 +255,9 @@ Query requests through `GET` method can return status codes `200`, `400`, `401`,
 
 👤 **Fernando N Carneiro**
 
-* Twitter: [@o\_fe](https://twitter.com/o\_fe)
+* Twitter: [@o_fe](https://twitter.com/o_fe)
 * Github: [@fncarneiro](https://github.com/fncarneiro)
-* LinkedIn: [@fncarneiro](https://linkedin.com/in/fncarneiro)
+* LinkedIn: [@fncarneiro](https://www.linkedin.com/in/fernando-carneiro-17b886184/)
 
 ## 🤝 Contributing
 
