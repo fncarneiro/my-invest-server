@@ -69,7 +69,7 @@ module.exports = {
                             }
                         }
                     }
-                    return res.status(201).json(response);
+                    return res.status(202).json(response);
                 }
             }
         } catch (erro) {
@@ -144,7 +144,7 @@ module.exports = {
                 res.status(409).json({ msg: 'Email not found.', email: email })
             } else {
                 const response = {
-                    msg: 'User deleted',
+                    msg: 'User deleted.',
                     user: {
                         email: email,
                         request: {

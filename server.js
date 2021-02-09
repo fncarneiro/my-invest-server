@@ -1,15 +1,16 @@
 const node_env = process.env.NODE_ENV.trim();
 switch (node_env) {
     case 'production':
-        require('dotenv').config({ path: './config/env/.env.production' });        
+        require('dotenv').config({ path: './config/env/.env.production' });
     case 'test':
-        require('dotenv').config({ path: './config/env/.env.test' });       
+        require('dotenv').config({ path: './config/env/.env.test' });
         break;
     default:
-        require('dotenv').config({ path: './config/env/.env.development' });        
+        require('dotenv').config({ path: './config/env/.env.development' });
         break;
-} 
-console.log(node_env)
+}
+console.log('Enviroment: ', node_env.toUpperCase());
+
 const customExpress = require('./config/customExpress');
 const tables = require('./infrastructure/tables');
 
@@ -27,3 +28,5 @@ app.listen(port, (error) => {
         console.log(`Server running on ${process.env.HOST} - port ${port} ...`)
     }
 })
+
+module.exports = app

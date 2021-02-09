@@ -13,8 +13,7 @@ module.exports = {
             .exists()
             .withMessage('Email is required.')
             .isEmail()
-            .withMessage('Invalid Email format (email@domain.com).')
-            .toLowerCase(),
+            .withMessage('Invalid Email format (email@domain.com).'),           
         (req, res, next) => {
             const errors = validationResult(req);
             if (!errors.isEmpty()) {
@@ -29,8 +28,7 @@ module.exports = {
             .exists()
             .withMessage('Email is required.')
             .isEmail()
-            .withMessage('Invalid Email format (email@domain.com).')
-            .toLowerCase(),
+            .withMessage('Invalid Email format (email@domain.com).'),            
         check('password')
             .exists()
             .withMessage('Password is required.')
@@ -50,8 +48,7 @@ module.exports = {
             .exists()
             .withMessage('Email is required.')
             .isEmail()
-            .withMessage('Invalid Email format (email@domain.com).')
-            .toLowerCase(),
+            .withMessage('Invalid Email format (email@domain.com).'),            
         check('password')
             .exists()
             .withMessage('Password is required.')
@@ -74,8 +71,7 @@ module.exports = {
             .exists()
             .withMessage('Email is required.')
             .isEmail()
-            .withMessage('Invalid Email format (email@domain.com).')
-            .toLowerCase(),
+            .withMessage('Invalid Email format (email@domain.com).'),            
         (req, res, next) => {
             const errors = validationResult(req);
             if (!errors.isEmpty()) {

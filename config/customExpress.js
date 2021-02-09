@@ -44,7 +44,7 @@ consign()
 
 const port = process.env.PORT || 3000;
 
-app.get('/test', (req, res, next) => res.send(`WebServer running on ${process.env.HOST} - port ${port} - ${new Date}`));
+app.get('*', (req, res, next) => res.send(`WebServer running on ${process.env.HOST} - port ${port} - ${new Date}`));
 
 app.use((req, res, next) => {
     const error = new Error('Route not found.');

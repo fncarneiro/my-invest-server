@@ -136,7 +136,7 @@ module.exports = {
                 return res.status(409).json({ msg: 'Id not found.', id_investment: id })
             } else {
                 const response = {
-                    msg: 'Investment deleted',
+                    msg: 'Investment deleted.',
                     investment: {
                         id_investment: id,
                         request: {

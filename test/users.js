@@ -1,64 +1,145 @@
-//process.env.NODE_ENV = 'test';
-
-const users = require('../models/users');
-const chai = require('chai');
-const chaiHttp = require('chai-http');
-const server = require('../server');
-const should = chai.should();
+const chai = require('chai'),
+    chaiHttp = require('chai-http'),
+    server = require('../server'),
+    faker = require('faker'),
+    expect = require('chai').expect;
 
 chai.use(chaiHttp);
 
-const defaultUser = {
-    name: "my-invest@server.com",
-    password: "password"
+let token;
+let user_email = faker.internet.email();
+const tokenUser = { 
+    email: "myinvest@server.com",
+    password: "password",
+    permission_level: 0
 };
 
-let token;
+describe('Users Route', function () {
 
-// parent block
-describe("User", () => {
-    beforeEach(done => {
-        chai
-            .request(server)
-            .post("/users")
-            .send(defaultUser)
-            .end((err, res) => {
-                res.should.have.status(200);
-                done();
-            });
-    });
-    beforeEach(done => {
+    before(done => {
         chai
             .request(server)
             .post("/login")
-            .send(defaultUser)
+            .send(tokenUser)
             .end((err, res) => {
                 token = res.body.token;
-                res.should.have.status(200);
+                expect(res).to.have.status(200);
                 done();
             });
     });
-    afterEach(done => {
-        // After each test we truncate the database
-        Users.remove({}, err => {
-            done();
-        });
+    it('Insert a user.', function (done) {
+        chai
+            .request(server)
+            .post('/users/')
+            .set("Authorization", `Bearer ${token}`)
+            .send({
+                email: user_email,
+                password: faker.internet.password(8),
+                permission_level: 0
+            })
+            .end((err, res) => {
+                expect(err).not.exist;
+                expect(res.status).to.equal(201);
+                expect(res.body).to.be.a('object');
+                expect(res.body).to.have.property('msg', 'User created.');
+                expect(res.body).to.have.property('user');
+                expect(res.body.user).to.have.property('id_user');               
+                expect(res.body.user).to.have.property('email').to.eql(user_email);
+                expect(res.body.user).to.have.property('permission_level').to.eql(0);
+                done();
+            })
+    });
+    it('Insert a duplicated user.', function (done) {
+        chai
+            .request(server)
+            .post('/users/')
+            .set("Authorization", `Bearer ${token}`)
+            .send({
+                email: 'myinvest@server.com',
+                password: faker.internet.password(8),
+                permission_level: 0 
+            })
+            .end((err, res) => {     
+                expect(err).not.exist;           
+                expect(res.status).to.equal(409);
+                expect(res.body).to.be.a('object');
+                expect(res.body).to.have.property('msg', 'Email already exists.'); 
+                expect(res.body).to.have.property('email').to.eql('myinvest@server.com');                
+                done();
+            })
+    });
+    it('Get all users.', function (done) {
+        chai
+            .request(server)
+            .get('/users')
+            .set("Authorization", `Bearer ${token}`)
+            .end((err, res) => {
+                expect(err).not.exist;
+                expect(res.status).to.equal(200);
+                expect(res.body).to.be.a('object');
+                expect(res.body).to.have.property('records').to.eql(2);
+                expect(res.body).to.have.property('users').to.have.lengthOf(2);
+                expect(res.body.users[1].user).to.have.property('id_user');
+                expect(res.body.users[1].user).to.have.property('email');
+                expect(res.body.users[1].user).to.have.property('permission_level');
+                user_email = res.body.users[1].user.email;
+                done();
+            })
+    });
+    it('Get one user.', function (done) {
+        chai
+            .request(server)
+            .get(`/users/${user_email}`)
+            .set("Authorization", `Bearer ${token}`)
+            .end((err, res) => {
+                expect(err).not.exist;
+                expect(res.status).to.equal(200);
+                expect(res.body).to.be.a('object');
+                expect(res.body).to.have.property('records').to.eql(1);
+                expect(res.body).to.have.property('user');
+                expect(res.body.user).to.have.property('id_user');
+                expect(res.body.user).to.have.property('email').to.eql(user_email);
+                expect(res.body.user).to.have.property('permission_level').to.eql(0);
+                done();
+            })
+    });
+    it('Update a user password.', function (done) {
+        chai
+            .request(server)
+            .put('/users/')
+            .set("Authorization", `Bearer ${token}`)
+            .send({
+                email: user_email,
+                password: faker.internet.password(8)                
+            })
+            .end((err, res) => {
+                expect(err).not.exist;
+                expect(res.status).to.equal(202);
+                expect(res.body).to.be.a('object');
+                expect(res.body).to.have.property('msg', 'User password updated.');
+                expect(res.body).to.have.property('user');
+                expect(res.body.user).to.have.property('id_user');
+                expect(res.body.user).to.have.property('email').to.eql(user_email);                
+                done();
+            })
+    });
+    it('Delete a user.', function (done) {
+        chai
+            .request(server)
+            .delete('/users/')
+            .set("Authorization", `Bearer ${token}`)
+            .send({
+                email: user_email                              
+            })
+            .end((err, res) => {
+                expect(err).not.exist;
+                expect(res.status).to.equal(202);
+                expect(res.body).to.be.a('object');
+                expect(res.body).to.have.property('msg', 'User deleted.');
+                expect(res.body).to.have.property('user');                
+                expect(res.body.user).to.have.property('email').to.eql(user_email);                
+                done();
+            })
     });
 
-    describe("/get users", () => {
-        it("should fetch all users successfully", (done) => {
-            chai
-                .request(server)
-                .get("/users")
-                .set({ Authorization: `Bearer ${token}` })
-                .end((err, res) => {
-                    res.should.have.status(200);
-                    // res.body.should.be.a('array');
-                    // res.body.length.should.be.eql(0);
-                    res.body.should.be.a("object");
-                    res.body.should.have.property("users");
-                    done();
-                });
-        });
-    });
 });

@@ -39,7 +39,9 @@ exports.createTables = () => {
     sql.forEach((sql) => {
         pool.execQuery(sql)
             .then((result) => {                
-                console.log(`Table ${sql.substring(27, 33)} verified.`);
+                if (process.env.NODE_ENV == 'development') {                     
+                    console.log(`Table ${sql.substring(27, 33)} verified.`) 
+                } 
             })
             .catch((error) => {
                 console.log(error);
