@@ -6,7 +6,7 @@ const chai = require('chai'),
 
 chai.use(chaiHttp);
 
-const default_user = {
+const defaultUser = {
     email: 'myinvest@server.com',
     password: 'password'
 } 
@@ -38,7 +38,7 @@ describe('Login Route', function () {
             .request(server)
             .post('/login')
             .send({
-                email: default_user.email,
+                email: defaultUser.email,
                 password: faker.internet.password(8)
             })
             .end((err, res) => {
@@ -52,7 +52,7 @@ describe('Login Route', function () {
         chai
             .request(server)
             .post('/login')
-            .send( default_user )
+            .send( defaultUser )
             .end((err, res) => {
                 expect(res.status).to.equal(200);
                 expect(err).not.exist;

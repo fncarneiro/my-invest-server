@@ -22,7 +22,6 @@ const tokenUser = {
 };
 
 describe('Investments Route', function () {
-
     before(done => {
         chai
             .request(server)

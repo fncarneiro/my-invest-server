@@ -164,9 +164,9 @@ module.exports = {
                 return res.status(409).json({ msg: 'Id not found.', id_stocks: id })
             } else {
                 const response = {
-                    msg: 'Stock deleted',
+                    msg: 'Stock deleted.',
                     stock: {
-                        id_stocks: id,
+                        id_stock: id,
                         request: {
                             type: 'DELETE',
                             description: 'Delete a specific stock.',
