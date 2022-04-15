@@ -6,9 +6,9 @@ const pool = mysql.createPool({
     port: process.env.MYSQL_PORT,
     user: process.env.MYSQL_USER,
     password: process.env.MYSQL_PASSWORD,
-    database: process.env.MYSQL_DATABASE    
+    database: process.env.MYSQL_DATABASE
 });
- 
+
 if (process.env.NODE_ENV == 'development') {
     pool.on('connection', () => console.log('MySql pool => connection success'));
     pool.on('release', () => console.log('MySql pool => connection returned'));

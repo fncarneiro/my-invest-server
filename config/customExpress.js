@@ -1,11 +1,10 @@
 const express = require('express');
 const bodyParser = require('body-parser');
-const consign = require('consign');
 const cors = require('cors');
 const helmet = require('helmet');
 const compression = require('compression');
 const morgan = require('morgan');
-
+const routes = require('../routes');
 const app = express();
 
 app.use(helmet());
@@ -32,19 +31,11 @@ app.use(function (req, res, next) {
     next();
 });
 
-// consign({
-//     cwd: 'app',
-//     verbose: process.env.APP_DEBUG === 'true' || false,
-//     locale: 'pt-br'
-// }).include('./middlewares/globals').then('../routes').into(app)
-
-consign()
-    .include('routes')
-    .into(app);
+app.use('/api', routes);
 
 const port = process.env.PORT || 3000;
 
-app.get('*', (req, res, next) => res.send(`WebServer running on ${process.env.HOST} - port ${port} - ${new Date}`));
+app.get('/', (req, res, next) => res.send(`WebServer running on ${process.env.HOST} - port ${port} - ${new Date}`));
 
 app.use((req, res, next) => {
     const error = new Error('Route not found.');

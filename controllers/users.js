@@ -13,13 +13,13 @@ module.exports = {
             .exists()
             .withMessage('Email is required.')
             .isEmail()
-            .withMessage('Invalid Email format (email@domain.com).'),           
+            .withMessage('Invalid Email format (email@domain.com).'),
         (req, res, next) => {
             const errors = validationResult(req);
             if (!errors.isEmpty()) {
                 return res.status(400).json({ errors: errors.array() });
             }
-            const email = req.params.email;            
+            const email = req.params.email;
             users.getUser(email, res);
         }],
 
@@ -28,12 +28,17 @@ module.exports = {
             .exists()
             .withMessage('Email is required.')
             .isEmail()
-            .withMessage('Invalid Email format (email@domain.com).'),            
+            .withMessage('Invalid Email format (email@domain.com).'),
         check('password')
             .exists()
             .withMessage('Password is required.')
             .isLength({ min: 8 })
             .withMessage('Password must have min 8 characters.'),
+        check('new_password')
+            .exists()
+            .withMessage('New password is required.')
+            .isLength({ min: 8 })
+            .withMessage('New password must have min 8 characters.'),
         (req, res, next) => {
             const errors = validationResult(req);
             if (!errors.isEmpty()) {
@@ -48,15 +53,12 @@ module.exports = {
             .exists()
             .withMessage('Email is required.')
             .isEmail()
-            .withMessage('Invalid Email format (email@domain.com).'),            
+            .withMessage('Invalid Email format (email@domain.com).'),
         check('password')
             .exists()
             .withMessage('Password is required.')
             .isLength({ min: 8 })
             .withMessage('Password must have min 8 characters.'),
-        check('permission_level')
-            .isInt()
-            .withMessage('Invalid Permission Level type (integer).'),
         (req, res, next) => {
             const errors = validationResult(req);
             if (!errors.isEmpty()) {
@@ -71,13 +73,14 @@ module.exports = {
             .exists()
             .withMessage('Email is required.')
             .isEmail()
-            .withMessage('Invalid Email format (email@domain.com).'),            
+            .withMessage('Invalid Email format (email@domain.com).'),
         (req, res, next) => {
             const errors = validationResult(req);
             if (!errors.isEmpty()) {
                 return res.status(400).json({ errors: errors.array() });
             }
             const email = req.body.email;
-            users.deleteUser(email, res);
+            const permissionLevel = req.user.permission_level;
+            users.deleteUser(email, permissionLevel, res);
         }]
 }

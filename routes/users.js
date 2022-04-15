@@ -1,14 +1,17 @@
+const express = require('express');
+const router = express.Router();
 const auth = require('../middlewares/auth');
-const users = require('../controllers/users');
+const usersController = require('../controllers/users');
 
-module.exports = app => {
-    app.get('/users', auth.mandatory, users.listUsers);
+router.route('/')
+    .get(auth.mandatory, usersController.listUsers)
 
-    app.get('/users/:email', auth.mandatory, users.getUser);       
+    .put(auth.mandatory, usersController.putUser)
 
-    app.put('/users', auth.mandatory, users.putUser);
+    .post(auth.optional, usersController.postUser)
 
-    app.post('/users', auth.optional, users.postUser);
+    .delete(auth.mandatory, usersController.deleteUser);
 
-    app.delete('/users', auth.mandatory,users.deleteUser);    
-}
+router.get('/:email', auth.mandatory, usersController.getUser);
+
+module.exports = router;

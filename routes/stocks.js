@@ -1,14 +1,16 @@
+const express = require('express');
+const router = express.Router();
 const auth = require('../middlewares/auth');
-const stocks = require('../controllers/stocks');
+const stocksController = require('../controllers/stocks');
 
-module.exports = app => {
-    app.get('/stocks', auth.optional, stocks.listStocks);
+router.get('/stocks', auth.optional, stocksController.listStocks);
 
-    app.get('/stocks/:id', auth.optional, stocks.getStock);
+router.get('/stocks/:id', auth.optional, stocksController.getStock);
 
-    app.put('/stocks/:id', auth.mandatory, stocks.putStock);
+router.put('/stocks/:id', auth.mandatory, stocksController.putStock);
 
-    app.post('/stocks', auth.mandatory, stocks.postStock);
+router.post('/stocks', auth.mandatory, stocksController.postStock);
 
-    app.delete('/stocks/:id', auth.mandatory, stocks.deleteStock);
-}
+router.delete('/stocks/:id', auth.mandatory, stocksController.deleteStock);
+
+module.exports = router;

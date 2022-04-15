@@ -1,4 +1,4 @@
-const pool = require('../infrastructure/conection');
+const pool = require('../infrastructure/connection');
 
 exports.createTables = () => {
     const sqlUser = `CREATE TABLE IF NOT EXISTS users (
@@ -8,7 +8,7 @@ exports.createTables = () => {
             permission_level int NOT NULL,
             PRIMARY KEY (id_user),
             UNIQUE KEY email_UNIQUE (email)
-          ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4`;           
+          ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4`;
 
     const sqlInvestment = `CREATE TABLE IF NOT EXISTS investments (
             id_investment int NOT NULL AUTO_INCREMENT,
@@ -34,14 +34,14 @@ exports.createTables = () => {
             CONSTRAINT id_investment FOREIGN KEY (id_investment) REFERENCES investments (id_investment) ON DELETE CASCADE) 
             ENGINE=InnoDB DEFAULT CHARSET=utf8mb4`;
 
-    const sql = [sqlUser, sqlInvestment, sqlStock ];
+    const sql = [sqlUser, sqlInvestment, sqlStock];
 
     sql.forEach((sql) => {
         pool.execQuery(sql)
-            .then((result) => {                
-                if (process.env.NODE_ENV == 'development') {                     
-                    console.log(`Table ${sql.substring(27, 33)} verified.`) 
-                } 
+            .then((result) => {
+                if (process.env.NODE_ENV == 'development') {
+                    console.log(`Table ${sql.substring(27, 33)} verified.`)
+                }
             })
             .catch((error) => {
                 console.log(error);

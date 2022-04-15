@@ -1,16 +1,16 @@
-const investments = require('../controllers/investments');
+const express = require('express');
+const router = express.Router();
 const auth = require('../middlewares/auth');
+const investmentsController = require('../controllers/investments');
 
-module.exports = app => {
+router.get('/', auth.optional, investmentsController.listInvestments);
 
-    app.get('/investments', auth.optional, investments.listInvestments);
+router.get('/:id', auth.optional, investmentsController.getInvestment);
 
-    app.get('/investments/:id', auth.optional, investments.getInvestment);
+router.put('/:id', auth.mandatory, investmentsController.putInvestment);
 
-    app.put('/investments/:id', auth.mandatory, investments.putInvestment);
+router.post('/', auth.mandatory, investmentsController.postInvestment);
 
-    app.post('/investments', auth.mandatory, investments.postInvestment);
+router.delete('/:id', auth.mandatory, investmentsController.deleteInvestment);
 
-    app.delete('/investments/:id', auth.mandatory, investments.deleteInvestment);
-
-}
+module.exports = router;

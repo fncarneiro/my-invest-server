@@ -1,4 +1,4 @@
-const pool = require('../infrastructure/conection');
+const pool = require('../infrastructure/connection');
 
 module.exports = {
     async createStock(stock, res) {
@@ -30,7 +30,7 @@ module.exports = {
                         request: {
                             type: 'POST',
                             description: 'Insert a stock.',
-                            url: process.env.HOST + ':' + process.env.PORT + '/stocks/' + resultInsert.insertId
+                            url: process.env.HOST + ':' + process.env.PORT + '/api/stocks/' + resultInsert.insertId
                         }
                     }
                 }
@@ -73,7 +73,7 @@ module.exports = {
                             request: {
                                 type: 'PUT',
                                 description: 'Update a specific stock.',
-                                url: process.env.HOST + ':' + process.env.PORT + '/stocks/' + id
+                                url: process.env.HOST + ':' + process.env.PORT + '/api/stocks/' + id
                             }
                         }
                     }
@@ -108,7 +108,7 @@ module.exports = {
                         request: {
                             type: 'GET',
                             description: 'List all stocks.',
-                            url: process.env.HOST + ':' + process.env.PORT + '/stocks/' + stock.id_stock
+                            url: process.env.HOST + ':' + process.env.PORT + '/api/stocks/' + stock.id_stock
                         }
                     }
                 })
@@ -144,7 +144,7 @@ module.exports = {
                         request: {
                             type: 'GET',
                             description: 'List a specific stock.',
-                            url: process.env.HOST + ':' + process.env.PORT + '/stocks/' + id
+                            url: process.env.HOST + ':' + process.env.PORT + '/api/stocks/' + id
                         }
                     }
                 }
@@ -170,7 +170,7 @@ module.exports = {
                         request: {
                             type: 'DELETE',
                             description: 'Delete a specific stock.',
-                            url: process.env.HOST + ':' + process.env.PORT + '/stocks/'
+                            url: process.env.HOST + ':' + process.env.PORT + '/api/stocks/'
                         }
                     }
                 }

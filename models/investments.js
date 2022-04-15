@@ -1,5 +1,5 @@
 const moment = require('moment');
-const pool = require('../infrastructure/conection');
+const pool = require('../infrastructure/connection');
 
 module.exports = {
     async createInvestment(investment, res) {
@@ -59,7 +59,7 @@ module.exports = {
                             request: {
                                 type: 'PUT',
                                 description: 'Update a specific investment.',
-                                url: process.env.HOST + ':' + process.env.PORT + '/investments/' + id
+                                url: process.env.HOST + ':' + process.env.PORT + '/api/investments/' + id
                             }
                         }
                     }
@@ -86,7 +86,7 @@ module.exports = {
                         request: {
                             type: 'GET',
                             description: 'List all investments.',
-                            url: process.env.HOST + ':' + process.env.PORT + '/investments/' + investment.id_investment
+                            url: process.env.HOST + ':' + process.env.PORT + '/api/investments/' + investment.id_investment
                         }
                     }
                 })
@@ -114,7 +114,7 @@ module.exports = {
                         request: {
                             type: 'GET',
                             description: 'List a specific investment.',
-                            url: process.env.HOST + ':' + process.env.PORT + '/investments/' + id
+                            url: process.env.HOST + ':' + process.env.PORT + '/api/investments/' + id
                         }
                     }
                 }
@@ -142,7 +142,7 @@ module.exports = {
                         request: {
                             type: 'DELETE',
                             description: 'Delete a specific investment.',
-                            url: process.env.HOST + ':' + process.env.PORT + '/investments/'
+                            url: process.env.HOST + ':' + process.env.PORT + '/api/investments/'
                         }
                     }
                 }
