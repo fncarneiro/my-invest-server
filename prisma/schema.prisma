@@ -1,0 +1,38 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model investments {
+  id_investment Int      @id @default(autoincrement())
+  period        DateTime @unique(map: "period_UNIQUE") @db.Date
+  stocks        stocks[]
+}
+
+model stocks {
+  id_stock      Int         @id @default(autoincrement())
+  stock_name    String      @db.VarChar(10)
+  by_amount     Int
+  by_price      Decimal     @db.Decimal(12, 2)
+  by_tax        Decimal?    @db.Decimal(12, 2)
+  target_profit Decimal?    @db.Decimal(12, 2)
+  sell_profit   Decimal?    @db.Decimal(12, 2)
+  sell_amount   Int?
+  sell_tax      Decimal?    @db.Decimal(12, 2)
+  note          String?     @db.VarChar(200)
+  id_investment Int
+  investments   investments @relation(fields: [id_investment], references: [id_investment], onDelete: Cascade, onUpdate: NoAction, map: "id_investment")
+
+  @@index([id_investment], map: "id_investment_idx")
+}
+
+model users {
+  id_user          Int    @id @default(autoincrement())
+  email            String @unique(map: "email_UNIQUE") @db.VarChar(100)
+  password         String @db.VarChar(100)
+  permission_level Int  
+}
