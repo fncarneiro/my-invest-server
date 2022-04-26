@@ -1,69 +1,63 @@
-import moment from 'moment';
-import execQuery from '../database/connection.js';
+import connection from '../database/connection.js';
+import * as formatResponse from '../utils/formatResponse.js';
+import {
+    investmentAlreadyExist,
+    investmentCreated,
+    investmentDeleted,
+    investmentNotFound,
+    investmentUpdated,
+    userNotFound,
+} from '../utils/messages.js';
 
 export async function createInvestment(investment, res) {
-    const sqlInsert = 'INSERT INTO investments SET ?';
-    const sqlSearch = 'SELECT id_investment, period FROM investments WHERE period = ?';
-    const period = moment.utc(investment.period, 'YYYY-MM-DD hh:mm:ss', true).format('YYYY-MM-DD');
-
     try {
-        const resultSearch = await execQuery(sqlSearch, period);
-
-        if (resultSearch.length > 0) {
-            return res.status(409).json({ msg: 'Period already exists.', period: period });
+        const userFounded = await connection.users.findFirst({ where: { id_user: investment.id_user } });
+        if (!userFounded) {
+            return res.status(404).json({ msg: userNotFound, id_user: investment.id_user })
         } else {
-            const investmentOk = { ...investment, period };
-            const resultInsert = await execQuery(sqlInsert, investmentOk);
+            const investmentFounded = await connection.investments.findFirst({
+                where: { id_user: investment.id_user, period: investment.period }
+            });
 
-            const response = {
-                msg: 'Investment created.',
-                investment: {
-                    id_investment: resultInsert.insertId,
-                    period: investmentOk.period,
-                    request: {
-                        type: 'POST',
-                        description: 'Insert a investment.',
-                        url: process.env.HOST + ':' + process.env.PORT + '/investments/' + resultInsert.insertId
+            if (investmentFounded) {
+                return res.status(409).json({ msg: investmentAlreadyExist, id_user: investment.id_user, period: investment.period });
+            } else {
+                const resultInsert = await connection.investments.create({
+                    data: {
+                        period: investment.period,
+                        id_user: investment.id_user,
                     }
-                }
+                })
+                const investmentResponse = { ...resultInsert };
+                const request = { type: 'POST', description: 'Insert a investment.' };
+                const response = formatResponse.investment(investmentResponse, request, investmentCreated);
+
+                return res.status(201).json(response);
             }
-            return res.status(201).json(response);
         }
     } catch (error) {
         return res.status(400).json(error)
     }
 };
 
-export async function updateInvestment(id, investment, res) {
-    const sqlUpdate = 'UPDATE investments SET ? where id_investment = ?';
-    const sqlSearch = 'SELECT id_investment, period FROM investments WHERE period = ?';
-    const period = moment.utc(investment.period, 'YYYY-MM-DD hh:mm:ss').format('YYYY-MM-DD');
+export async function updateInvestment(investment, res) {
     try {
-        const resultSearch = await execQuery(sqlSearch, period);
+        const investmentFounded = await connection.investments.findUnique({ where: { id_investment: investment.id_investment } });
 
-        if (resultSearch.length > 0) {
-            return res.status(409).json({ msg: 'Period already exists.', period: period })
+        if (!investmentFounded) {
+            return res.status(409).json({ msg: investmentNotFound, id_investment: investment.id_investment })
         } else {
-            const investmentOk = { ...investment, period };
-            const resultUpdate = await execQuery(sqlUpdate, [investmentOk, id]);
-
-            if (resultUpdate.affectedRows == 0) {
-                return res.status(409).json({ msg: 'Id not found.', id_investment: id })
-            } else {
-                const response = {
-                    msg: 'Investment updated.',
-                    investment: {
-                        id_investment: id,
-                        period: investmentOk.period,
-                        request: {
-                            type: 'PUT',
-                            description: 'Update a specific investment.',
-                            url: process.env.HOST + ':' + process.env.PORT + '/api/investments/' + id
-                        }
-                    }
+            const resultUpdate = await connection.investments.update({
+                where: { id_investment: investment.id_investment },
+                data: {
+                    period: investment.period
                 }
-                res.status(202).json(response);
-            }
+            });
+            const investmentResponse = { ...resultUpdate };
+            const request = { type: 'PUT', description: 'Update a investment.' };
+            const response = formatResponse.investment(investmentResponse, request, investmentUpdated);
+
+            res.status(202).json(response);
         }
     } catch (error) {
         return res.status(400).json(error)
@@ -72,22 +66,13 @@ export async function updateInvestment(id, investment, res) {
 
 export async function listInvestment(res) {
     try {
-        const sqlList = 'SELECT id_investment, period FROM investments order by period';
+        const resultList = await connection.investments.findMany({ orderBy: [{ id_user: 'asc' }, { period: 'asc' }] });
 
-        const resultList = await execQuery(sqlList);
-
+        const request = { type: 'GET', description: 'List all investments.' };
         const response = {
             records: resultList.length,
             investments: resultList.map(investment => {
-                return {
-                    id_investment: investment.id_investment,
-                    period: investment.period,
-                    request: {
-                        type: 'GET',
-                        description: 'List all investments.',
-                        url: process.env.HOST + ':' + process.env.PORT + '/api/investments/' + investment.id_investment
-                    }
-                }
+                return formatResponse.investment(investment, request);
             })
         }
         return res.status(200).json(response);
@@ -98,25 +83,15 @@ export async function listInvestment(res) {
 
 export async function getInvestment(id, res) {
     try {
-        const sqlSearch = 'SELECT id_investment, period FROM investments WHERE id_investment = ?';
+        const investmentFounded = await connection.investments.findUnique({ where: { id_investment: id } });
 
-        const resultSearch = await execQuery(sqlSearch, id);
-
-        if (resultSearch.length == 0) {
-            return res.status(404).json({ msg: 'Id not found', id_investment: id })
+        if (!investmentFounded) {
+            return res.status(404).json({ msg: 'Id not found.', id_investment: id })
         } else {
-            const response = {
-                records: resultSearch.length,
-                investment: {
-                    id_investment: id,
-                    period: resultSearch[0].period,
-                    request: {
-                        type: 'GET',
-                        description: 'List a specific investment.',
-                        url: process.env.HOST + ':' + process.env.PORT + '/api/investments/' + id
-                    }
-                }
-            }
+            const investmentResponse = { ...investmentFounded };
+            const request = { type: 'GET', description: 'GET a specific investment.' };
+            const response = formatResponse.investment(investmentResponse, request);
+
             return res.status(200).json(response);
         }
     }
@@ -125,26 +100,18 @@ export async function getInvestment(id, res) {
     }
 };
 
-export async function deleteInvestment(id, res) {
+export async function deleteInvestment(investment, res) {
     try {
-        const sqlDelete = 'DELETE FROM investments where id_investment = ?';
+        const investmentFounded = await connection.investments.findUnique({ where: { id_investment: investment.id_investment } });
 
-        const resultDelete = await execQuery(sqlDelete, id);
-
-        if (resultDelete.affectedRows == 0) {
-            return res.status(409).json({ msg: 'Id not found.', id_investment: id })
+        if (!investmentFounded) {
+            res.status(404).json({ msg: investmentNotFound, id_investment: investment.id_investment })
         } else {
-            const response = {
-                msg: 'Investment deleted.',
-                investment: {
-                    id_investment: id,
-                    request: {
-                        type: 'DELETE',
-                        description: 'Delete a specific investment.',
-                        url: process.env.HOST + ':' + process.env.PORT + '/api/investments/'
-                    }
-                }
-            }
+            const resultDelete = await connection.investments.delete({ where: { id_investment: investment.id_investment } });
+
+            const request = { type: 'DELETE', description: 'Delete a specific investment.' };
+            const response = formatResponse.investment(resultDelete, request, investmentDeleted);
+
             return res.status(202).json(response);
         }
     } catch (error) {

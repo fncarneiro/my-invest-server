@@ -9,8 +9,12 @@ datasource db {
 
 model investments {
   id_investment Int      @id @default(autoincrement())
-  period        DateTime @unique(map: "period_UNIQUE") @db.Date
+  period        DateTime @db.Date
   stocks        stocks[]
+  id_user       Int
+  users         users    @relation(fields: [id_user], references: [id_user], onDelete: Cascade, onUpdate: NoAction, map: "id_user")
+
+  @@unique([period, id_user])
 }
 
 model stocks {
@@ -31,8 +35,10 @@ model stocks {
 }
 
 model users {
-  id_user          Int    @id @default(autoincrement())
-  email            String @unique(map: "email_UNIQUE") @db.VarChar(100)
-  password         String @db.VarChar(100)
-  permission_level Int  
+  id_user          Int           @id @default(autoincrement())
+  email            String        @unique(map: "email_UNIQUE") @db.VarChar(100)
+  password         String        @db.VarChar(100)
+  permission_level Int
+  create_at        DateTime      @default(now())
+  investments      investments[]
 }

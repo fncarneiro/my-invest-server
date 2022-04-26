@@ -5,18 +5,23 @@ import helmet from 'helmet';
 import compression from 'compression';
 import morgan from 'morgan';
 import routes from '../routes/index.js';
+import dotenv from 'dotenv';
+
+dotenv.config({ path: './src/config/env/.env.development' });
+const host = process.env.HOST;
 
 const app = express();
 
 app.use(helmet());
 app.use(compression());
 
-app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 app.use(morgan('dev'));
 
 app.use(function (req, res, next) {
-    res.header('Access-Control-Allow-Origin', '*');
+    res.header('Access-Control-Allow-Origin', host);
+    res.header('Vary', 'Origin');
     res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
     app.use(cors());
 

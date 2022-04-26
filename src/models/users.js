@@ -1,6 +1,13 @@
 import * as crypt from '../utils/crypt.js';
 import { userTypes } from '../utils/constants.js';
-import { userAlreadyExist, userNotAlowed, userNotFound, userCreated, userDeleted, userPasswordUpdated } from '../utils/messages.js';
+import {
+    userAlreadyExist,
+    userNotAlowed,
+    userNotFound,
+    userCreated,
+    userDeleted,
+    userPasswordUpdated
+} from '../utils/messages.js';
 import * as formatResponse from '../utils/formatResponse.js';
 import connection from '../database/connection.js';
 
@@ -31,7 +38,7 @@ export async function createUser(user, res) {
             })
 
             const userResponse = { ...resultInsert };
-            const request = { type: 'POST', description: 'Insert a user.' }
+            const request = { type: 'POST', description: 'Insert a user.' };
 
             const response = formatResponse.user(userResponse, request, userCreated);
 
@@ -55,7 +62,7 @@ export async function updateUser(user, res) {
                     data: { password: resultCryptNewPassword }
                 })
 
-                const request = { type: 'PUT', description: 'Update user password.' }
+                const request = { type: 'PUT', description: 'Update user password.' };
                 const response = formatResponse.user(userFounded, request, userPasswordUpdated);
 
                 return res.status(202).json(response);
@@ -110,7 +117,7 @@ export async function deleteUser(email, permissionLevel, res) {
             if (!userFounded) {
                 res.status(404).json({ msg: userNotFound, email: email })
             } else {
-                const resultDelete = await connection.users.delete({ where: { email: userFounded.email } })
+                const resultDelete = await connection.users.delete({ where: { email: userFounded.email } });
                 const request = { type: 'DELETE', description: 'Delete a specific user.' };
                 const response = formatResponse.user(resultDelete, request, userDeleted);
 

@@ -12,7 +12,7 @@ const connection = new PrismaClient({
 });
 
 connection.$on('beforeExit', async () => {
-    console.log('Shutting down server')
+    console.log('Shutting down DB Server')
     await connection.$disconnect();
 })
 

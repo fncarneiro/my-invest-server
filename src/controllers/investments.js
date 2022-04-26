@@ -8,44 +8,37 @@ export const listInvestments = (req, res, next) => {
 export const getInvestment = [
     param('id')
         .isInt()
-        .withMessage('Invalid ID type (integer).'),
+        .withMessage('Invalid ID type (integer).')
+        .toInt(),
     (req, res, next) => {
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
             return res.status(400).json({ errors: errors.array() });
         }
-        const id = parseInt(req.params.id);
+        const id = req.params.id;
         investments.getInvestment(id, res);
     }];
 
 export const putInvestment = [
-    param('id')
+    check('id_investment')
+        .exists()
+        .withMessage('Investment Id is required.')
         .isInt()
-        .withMessage('Invalid ID type (integer).'),
+        .withMessage('Invalid Investment Id type (integer).')
+        .toInt(),
     check('period')
         .exists()
-        .withMessage('Period (yyyy-mm-dd) is required.')
-        .isISO8601()
-        .withMessage('Invalid Period format (yyyy-mm-dd).')
-        .isDate({ format: 'yyyy-mm-dd', strictMode: true })
-        .withMessage('Invalid date (yyyy-mm-dd).')
-        .toDate()
-        .custom((period) => {
-            const today = new Date();
-            if (period > today) {
-                throw new Error('Period must be iqual or less today.');
-            }
-
-            return true;
-        }),
+        .withMessage('Period is required.')
+        .isDate()
+        .withMessage('Invalid Period type (date yyyy-mm-dd).')
+        .toDate(),
     (req, res, next) => {
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
             return res.status(400).json({ errors: errors.array() });
         }
-        const id = parseInt(req.params.id);
         const investment = req.body;
-        investments.updateInvestment(id, investment, res);
+        investments.updateInvestment(investment, res);
     }];
 
 export const postInvestment = [
@@ -64,6 +57,12 @@ export const postInvestment = [
             }
             return true;
         }),
+    check('id_user')
+        .exists()
+        .withMessage('User Id is required.')
+        .isInt()
+        .withMessage('Invalid User Id type (integer).')
+        .toInt(),
     (req, res, next) => {
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
@@ -74,14 +73,17 @@ export const postInvestment = [
     }];
 
 export const deleteInvestment = [
-    param('id')
+    check('id_investment')
+        .exists()
+        .withMessage('Investment Id is required.')
         .isInt()
-        .withMessage('Invalid ID type (integer).'),
+        .withMessage('Invalid ID type (integer).')
+        .toInt(),
     (req, res, next) => {
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
             return res.status(400).json({ errors: errors.array() });
         }
-        const id = parseInt(req.params.id);
-        investments.deleteInvestment(id, res);
+        const investment = req.body;
+        investments.deleteInvestment(investment, res);
     }];
